@@ -6,3 +6,18 @@ export const createCarService = async (carData) => {
 
   return car;
 };
+
+
+export const updateCarService = async (carId, updateData) => {
+  const updatedCar = await Car.findByIdAndUpdate(
+    carId,
+    { $set: updateData },
+    {
+      returnDocument: "after",
+      runValidators: true,
+      strict: "throw",
+    }
+  );
+
+  return updatedCar;
+};
