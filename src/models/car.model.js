@@ -157,16 +157,16 @@ const carSchema = new mongoose.Schema(
     },
 
     features: {
-      sunroof: { type: Boolean, default: false },
-      parkingCamera: { type: Boolean, default: false },
-      climateControl: { type: Boolean, default: false },
-      powerWindow: { type: Boolean, default: false },
-      adas: { type: Boolean, default: false },
-      parkingSensors: { type: Boolean, default: false },
-      seatVentilation: { type: Boolean, default: false },
-      cruiseControl: { type: Boolean, default: false },
-      androidAuto: { type: Boolean, default: false },
-      wirelessCharging: { type: Boolean, default: false },
+      sunroof: { type: Boolean, default: false, required: true },
+      parkingCamera: { type: Boolean, default: false, required: true },
+      climateControl: { type: Boolean, default: false, required: true },
+      powerWindow: { type: Boolean, default: false, required: true },
+      adas: { type: Boolean, default: false, required: true },
+      parkingSensors: { type: Boolean, default: false, required: true },
+      seatVentilation: { type: Boolean, default: false, required: true },
+      cruiseControl: { type: Boolean, default: false, required: true },
+      androidAuto: { type: Boolean, default: false, required: true },
+      wirelessCharging: { type: Boolean, default: false, required: true },
     },
 
     safety: {
