@@ -1,4 +1,6 @@
 import mongoose from "mongoose";
+import { STATUS_CODES } from "../helpers/error.helper.js";
+
 // car creation middleware
 export const validateCarRequest = (req, res, next) => {
 
@@ -7,8 +9,9 @@ export const validateCarRequest = (req, res, next) => {
         typeof req.body !== "object" ||
         Array.isArray(req.body)
     ) {
-        return res.status(400).json({
+        return res.status(STATUS_CODES.BAD_REQUEST.code).json({
             success: false,
+            message: STATUS_CODES.BAD_REQUEST.message,
             message: "Request body must be a JSON object.",
         });
     }
@@ -34,8 +37,9 @@ export const validateCarRequest = (req, res, next) => {
     );
 
     if (missingFields.length > 0) {
-        return res.status(400).json({
+        return res.status(STATUS_CODES.BAD_REQUEST.code).json({
             success: false,
+            message: STATUS_CODES.BAD_REQUEST.message,
             message: "Required fields are missing.",
             missingFields,
         });
@@ -64,8 +68,9 @@ const allowedFields = [
 
 export const validateCarUpdate = (req, res, next) => {
     if (!mongoose.isValidObjectId(req.params.id)) {
-        return res.status(400).json({
+        return res.status(STATUS_CODES.BAD_REQUEST.code).json({
             success: false,
+            message: STATUS_CODES.BAD_REQUEST.message,
             message: "Invalid car ID.",
         });
     }
@@ -78,8 +83,9 @@ export const validateCarUpdate = (req, res, next) => {
         Array.isArray(body) ||
         Object.keys(body).length === 0
     ) {
-        return res.status(400).json({
+        return res.status(STATUS_CODES.BAD_REQUEST.code).json({
             success: false,
+            message: STATUS_CODES.BAD_REQUEST.message,
             message: "Provide at least one field to update.",
         });
     }
@@ -89,8 +95,9 @@ export const validateCarUpdate = (req, res, next) => {
     );
 
     if (invalidFields.length > 0) {
-        return res.status(400).json({
+        return res.status(STATUS_CODES.BAD_REQUEST.code).json({
             success: false,
+            message: STATUS_CODES.BAD_REQUEST.message,
             message: "Unknown or non-editable fields provided.",
             invalidFields,
         });
@@ -98,3 +105,18 @@ export const validateCarUpdate = (req, res, next) => {
 
     next();
 };
+
+
+// delete car 
+export const validateCarDelete = (req, res, next) => {
+    
+    if(!mongoose.isValidObjectId(req.params.id)){
+        return res.status(STATUS_CODES.NOT_FOUND.code).json({
+            success: false,
+            message: STATUS_CODES.NOT_FOUND.message,
+            message: "car Id not found"
+        });
+    }
+    next();
+}
+
