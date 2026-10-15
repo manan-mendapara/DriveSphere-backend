@@ -1,5 +1,5 @@
 
-import { createCarService, deleteCarService, getAllCarsService, updateCarService } from "../services/car.services.js";
+import { createCarService, deleteCarService, getAllCarsService, getCarByIdService, updateCarService } from "../services/car.services.js";
 import { STATUS_CODES } from "../helpers/error.helper.js";
 
 
@@ -76,7 +76,7 @@ export const deleteCarController = async (req, res, next) => {
 // ================================ user car display api =========================================== //
 
 // all cars
-export const allCarsController =async (req, res, next) => {
+export const allCarsController = async (req, res, next) => {
   try {
     const allCars = await getAllCarsService();
 
@@ -96,6 +96,31 @@ export const allCarsController =async (req, res, next) => {
       data: allCars
     });
   } catch(error){ 
+    next(error);
+  }
+}
+
+// get car by id 
+export const carbyIdController = async (req, res, next) => {
+  try {
+    const carById = await getCarByIdService(req.params.id);
+
+    if(!carById) {
+      res.status(STATUS_CODES.BAD_REQUEST.code).json({
+        success: false,
+        message: STATUS_CODES.BAD_REQUEST.message,
+        message: "Car id not found."
+      });
+    }
+
+    res.status(STATUS_CODES.OK.code).json({
+      success: true,
+      status: STATUS_CODES.OK.status,
+      message: STATUS_CODES.OK.message,
+      message: "Cars Fetch Successfully.",
+      data: carById
+    });
+  } catch(error) {
     next(error);
   }
 }

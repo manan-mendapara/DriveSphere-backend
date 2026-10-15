@@ -1,9 +1,9 @@
 
 import Car from "../models/car.model.js";
 
-// admin side operations
-// create cars
+// =================================== admin side operations ================================== //
 
+// create cars
 export const createCarService = async (carData) => {
   const car = await Car.create(carData);
 
@@ -34,11 +34,19 @@ export const deleteCarService = async (carId) => {
 }
 
 
-// user side operation
-// get all cars
+// ======================================== user side operation ==================================== //
 
-export const getAllCarsService = async (carData) => {
+// get all cars
+export const getAllCarsService = async () => {
   const allCars = await Car.find();
 
   return allCars;
+}
+
+
+// find by id service
+export const getCarByIdService = async (carId) => {
+  const carById = await Car.findById(carId);
+
+  return carById;
 }

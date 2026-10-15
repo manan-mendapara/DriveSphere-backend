@@ -120,3 +120,14 @@ export const validateCarDelete = (req, res, next) => {
     next();
 }
 
+// get car by id
+export const validateCarId = (req, res, next) => {
+    if(!mongoose.isValidObjectId(req.params.id)){
+        return res.status(STATUS_CODES.NOT_FOUND.code).json({
+            success: false,
+            message: STATUS_CODES.NOT_FOUND.message,
+            message: "car Id not found"
+        });
+    }
+    next();
+}
