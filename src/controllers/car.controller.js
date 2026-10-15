@@ -1,5 +1,17 @@
-
-import { carBodytypeListService, carBrandListService, carCategoryListService, createCarService, deleteCarService, getAllCarsService, getCarByIdService, searchByBrandService, searchByCategoryService, searchByBodyTypeService, searchCarsServices, updateCarService,  } from "../services/car.services.js";
+import { 
+  carBodytypeListService, 
+  carBrandListService, 
+  carCategoryListService, 
+  createCarService, 
+  deleteCarService, 
+  getAllCarsService, 
+  getCarByIdService, 
+  searchByBrandService, 
+  searchByCategoryService, 
+  searchByBodyTypeService, 
+  searchCarsServices, 
+  updateCarService,  
+} from "../services/car.services.js";
 import { STATUS_CODES } from "../helpers/error.helper.js";
 
 
@@ -71,7 +83,6 @@ export const deleteCarController = async (req, res, next) => {
     next(error)
   }
 }
-
 
 // ================================ user car display api =========================================== //
 
@@ -193,7 +204,7 @@ export const categorySearchController = async (req, res, next) => {
   }
 }
 
-// bodytype seearch
+// bodytype search
 export const bodyTypeSearchController = async (req, res, next) => {
   try {
     const { bodyType } = req.params;
@@ -221,7 +232,7 @@ export const bodyTypeSearchController = async (req, res, next) => {
   }
 };
 
-
+// brand list 
 export const brandListController = async (req, res, next) => {
   try {
     const brands = await carBrandListService();
@@ -238,6 +249,7 @@ export const brandListController = async (req, res, next) => {
   }
 }
 
+// category list
 export const categoryListController = async (req, res, next) => {
   try {
     const categories = await carCategoryListService();
@@ -254,6 +266,7 @@ export const categoryListController = async (req, res, next) => {
   }
 }
 
+// bodytype lis
 export const bodyTypeListController = async (req, res, next) => {
   try {
     const bodyType = await carBodytypeListService();

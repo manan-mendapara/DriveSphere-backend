@@ -1,4 +1,3 @@
-
 import Car from "../models/car.model.js";
 import {
   buildCarFilter,
@@ -25,7 +24,7 @@ export const updateCarService = async (carId, updateData) => {
       returnDocument: "after",
       runValidators: true,
       strict: "throw",
-    }
+    },
   );
 
   return updatedCar;
@@ -33,12 +32,9 @@ export const updateCarService = async (carId, updateData) => {
 
 // delete cars
 export const deleteCarService = async (carId) => {
-  const deleteCar = await Car.findByIdAndDelete(
-    carId,
-  )
+  const deleteCar = await Car.findByIdAndDelete(carId);
   return deleteCar;
-}
-
+};
 
 // ======================================== user side operation ==================================== //
 
@@ -47,15 +43,41 @@ export const getAllCarsService = async () => {
   const allCars = await Car.find();
 
   return allCars;
-}
-
+};
 
 // find by id service
 export const getCarByIdService = async (carId) => {
   const carById = await Car.findById(carId);
 
   return carById;
-}
+};
+
+// car brand list
+export const carBrandListService = async (brand) => {
+  const brandList = await Car.distinct("brand");
+
+  return brandList.filter(Boolean).sort((a, b) => {
+    a.localeCompare(b);
+  });
+};
+
+// car category list
+export const carCategoryListService = async (category) => {
+  const categoryList = await Car.distinct("category");
+
+  return categoryList.filter(Boolean).sort((a, b) => {
+    a.localeCompare(b);
+  });
+};
+
+// car boytype list
+export const carBodytypeListService = async (bodytype) => {
+  const bodyTypeList = await Car.distinct("bodyType");
+
+  return bodyTypeList.filter(Boolean).sort((a, b) => {
+    a.localeCompare(b);
+  });
+};
 
 // car search quey
 export const searchCarsServices = async (query) => {
@@ -64,11 +86,7 @@ export const searchCarsServices = async (query) => {
   const sort = buildCarSort(query);
 
   const [cars, total] = await Promise.all([
-    Car.find(filter)
-      .sort(sort)
-      .skip(skip)
-      .limit(limit)
-      .lean(),
+    Car.find(filter).sort(sort).skip(skip).limit(limit).lean(),
 
     Car.countDocuments(filter),
   ]);
@@ -89,12 +107,12 @@ export const searchByBrandService = async (brand) => {
   const carByBrand = await Car.find({
     brand: {
       $regex: `^${escapeRegex(brand.trim())}$`,
-      $options: "i", 
-    }
+      $options: "i",
+    },
   }).lean();
 
   return carByBrand;
-}
+};
 
 // search category type
 export const searchByCategoryService = async (category) => {
@@ -119,36 +137,3 @@ export const searchByBodyTypeService = async (bodyType) => {
     },
   });
 };
-
-// car brand list 
-export const carBrandListService = async (brand) => {
-  const brandList = await Car.distinct("brand");
-
-  return brandList
-    .filter(Boolean)
-    .sort((a, b) => {
-      a.localeCompare(b)
-    });
-}
-
-// car category list
-export const carCategoryListService = async (category) => {
-  const categoryList = await Car.distinct("category");
-
-  return categoryList
-  .filter(Boolean)
-  .sort((a,b) => {
-    a.localeCompare(b)
-  });
-}
-
-// car boytype list
-export const carBodytypeListService = async (bodytype) => {
-  const bodyTypeList = await Car.distinct("bodyType");
-
-  return bodyTypeList
-  .filter(Boolean)
-  .sort((a,b) => {
-    a.localeCompare(b)
-  });
-}
