@@ -240,7 +240,6 @@ export const validateCarSearch = (req, res, next) => {
 export const validateBrand = async (req, res, next) => {
     const brand = req.params.brand;
 
-    if(mongoose)
     if(!brand) {
         res.status(STATUS_CODES.BAD_REQUEST.code).json({
             success: false,

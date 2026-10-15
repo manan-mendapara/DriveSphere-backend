@@ -5,6 +5,7 @@ import {
   buildCarPagination,
   buildCarSort,
 } from "../helpers/carSearch.helper.js";
+import { escapeRegex } from "../helpers/regex.helper.js";
 
 // =================================== admin side operations ================================== //
 
@@ -84,7 +85,6 @@ export const searchCarsServices = async (query) => {
 };
 
 // car search by brand
-import { escapeRegex } from "../helpers/regex.helper.js";
 export const searchByBrandService = async (brand) => {
   const carByBrand = await Car.find({
     brand: {
@@ -94,4 +94,61 @@ export const searchByBrandService = async (brand) => {
   }).lean();
 
   return carByBrand;
+}
+
+// search category type
+export const searchByCategoryService = async (category) => {
+  const escapedCategory = escapeRegex(category.trim());
+
+  return await Car.find({
+    category: {
+      $regex: `^${escapedCategory}$`,
+      $options: "i",
+    },
+  });
+};
+
+// search bodytype
+export const searchByBodyTypeService = async (bodyType) => {
+  const escapedBodyType = escapeRegex(bodyType.trim());
+
+  return await Car.find({
+    bodyType: {
+      $regex: `^${escapedBodyType}$`,
+      $options: "i",
+    },
+  });
+};
+
+// car brand list 
+export const carBrandListService = async (brand) => {
+  const brandList = await Car.distinct("brand");
+
+  return brandList
+    .filter(Boolean)
+    .sort((a, b) => {
+      a.localeCompare(b)
+    });
+}
+
+// car category list
+export const carCategoryListService = async (category) => {
+  const categoryList = await Car.distinct("category");
+
+  return categoryList
+  .filter(Boolean)
+  .sort((a,b) => {
+    a.localeCompare(b)
+  });
+}
+
+// car boytype list
+export const carBodytypeListService = async (bodytype) => {
+  const bodyTypeList = await Car.distinct("bodyType");
+
+  return bodyTypeList
+  .filter(Boolean)
+  .sort((a,b) => {
+    a.localeCompare(b)
+  });
 }
