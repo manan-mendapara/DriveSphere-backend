@@ -1,5 +1,10 @@
 
 import Car from "../models/car.model.js";
+import {
+  buildCarFilter,
+  buildCarPagination,
+  buildCarSort,
+} from "../helpers/carSearch.helper.js";
 
 // =================================== admin side operations ================================== //
 
@@ -49,4 +54,44 @@ export const getCarByIdService = async (carId) => {
   const carById = await Car.findById(carId);
 
   return carById;
+}
+
+// car search quey
+export const searchCarsServices = async (query) => {
+  const filter = buildCarFilter(query);
+  const { page, limit, skip } = buildCarPagination(query);
+  const sort = buildCarSort(query);
+
+  const [cars, total] = await Promise.all([
+    Car.find(filter)
+      .sort(sort)
+      .skip(skip)
+      .limit(limit)
+      .lean(),
+
+    Car.countDocuments(filter),
+  ]);
+
+  return {
+    cars,
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
+};
+
+// car search by brand
+import { escapeRegex } from "../helpers/regex.helper.js";
+export const searchByBrandService = async (brand) => {
+  const carByBrand = await Car.find({
+    brand: {
+      $regex: `^${escapeRegex(brand.trim())}$`,
+      $options: "i", 
+    }
+  }).lean();
+
+  return carByBrand;
 }

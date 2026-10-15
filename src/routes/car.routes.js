@@ -1,7 +1,7 @@
 
 import express from "express";
-import { validateCarDelete, validateCarId, validateCarRequest, validateCarUpdate } from "../middleware/car.middleware.js";
-import { allCarsController, carbyIdController, createCarController, deleteCarController, updateCarController } from "../controllers/car.controller.js";
+import { validateCarDelete, validateCarId, validateCarRequest, validateCarUpdate, validateCarSearch, validateBrand,  } from "../middleware/car.middleware.js";
+import { allCarsController, brandSearchController, carbyIdController, createCarController, deleteCarController, searchCarsController, updateCarController } from "../controllers/car.controller.js";
 
 const router = express.Router();
 
@@ -12,7 +12,8 @@ router.delete("/:id", validateCarDelete, deleteCarController);
 
 
 // user routes
-router.get("/allcars", allCarsController);
-router.get("/find/:id", validateCarId, carbyIdController);
-
+router.get("/", allCarsController);
+router.get("/:id", validateCarId, carbyIdController);
+router.get("/search", validateCarSearch, searchCarsController );
+router.get("/brand/:brand", validateBrand, brandSearchController);
 export default router;

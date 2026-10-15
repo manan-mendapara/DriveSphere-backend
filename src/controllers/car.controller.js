@@ -1,5 +1,5 @@
 
-import { createCarService, deleteCarService, getAllCarsService, getCarByIdService, updateCarService } from "../services/car.services.js";
+import { createCarService, deleteCarService, getAllCarsService, getCarByIdService, searchByBrandService, searchCarsServices, updateCarService } from "../services/car.services.js";
 import { STATUS_CODES } from "../helpers/error.helper.js";
 
 
@@ -120,6 +120,51 @@ export const carbyIdController = async (req, res, next) => {
       message: "Cars Fetch Successfully.",
       data: carById
     });
+  } catch(error) {
+    next(error);
+  }
+}
+
+export const searchCarsController = async (req, res, next) => {
+  try {
+    const result = await searchCarsServices(req.query);
+
+    return res.status(STATUS_CODES.OK.code).json({
+      success: true,
+      message: STATUS_CODES.OK.message,
+      message: "Cars fetched successfully",
+      ...result,
+    });
+
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const brandSearchController = async (req, res, next) => {
+  try {
+    const { brand } = req.params;
+    const carBrand = await searchByBrandService(brand);
+
+    console.log(carBrand);
+
+    if(!carBrand) {
+      return res.status(STATUS_CODES.BAD_REQUEST.code).json({
+        success: false,
+        message: STATUS_CODES.BAD_REQUEST.message,
+        message: "brand not found",
+        status: STATUS_CODES.BAD_REQUEST.code
+      });
+    }
+
+    res.status(STATUS_CODES.OK.code).json({
+      success: true,
+      message: STATUS_CODES.OK.message,
+      message: "car brand fetch successfully.",
+      status: STATUS_CODES.OK.code,
+      data: carBrand
+    });
+
   } catch(error) {
     next(error);
   }
