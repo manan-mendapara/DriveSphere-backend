@@ -22,14 +22,38 @@ import {
     searchCarsController, 
     updateCarController,
 } from "../controllers/car.controller.js";
+import { authMiddleware } from "../middleware/auth.middleware.js";
+import { adminMiddleware } from "../middleware/admin.middleware.js";
+
 
 const router = express.Router();
 
 // ======================================== admin car creation routes =================================//
-router.post("/", validateCarRequest, createCarController);
-router.patch("/:id", validateCarUpdate, updateCarController);
-router.delete("/:id", validateCarDelete, deleteCarController);
+// ========================= Admin car management routes ========================= //
 
+router.post(
+  "/",
+  authMiddleware,
+  adminMiddleware,
+  validateCarRequest,
+  createCarController
+);
+
+router.patch(
+  "/:id",
+  authMiddleware,
+  adminMiddleware,
+  validateCarUpdate,
+  updateCarController
+);
+
+router.delete(
+  "/:id",
+  authMiddleware,
+  adminMiddleware,
+  validateCarDelete,
+  deleteCarController
+);
 
 // =============================== user routes ======================================= //
 router.get("/", allCarsController);
