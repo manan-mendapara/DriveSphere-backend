@@ -1,0 +1,1 @@
+import { createWishlistService } from "../services/wishlist.service.js";

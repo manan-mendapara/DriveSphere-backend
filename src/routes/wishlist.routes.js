@@ -1,0 +1,1 @@
+import { createWishlistController } from "../controllers/wishlist.controller.js";
