@@ -12,20 +12,21 @@ import {
   searchCarsServices, 
   updateCarService,  
 } from "../services/car.service.js";
-import { STATUS_CODES } from "../helpers/error.helper.js";
-
+import { sendResponse } from "../helpers/response.helper.js";
 
 // create car controller
 export const createCarController = async (req, res, next) => {
   try {
     const createdCar = await createCarService(req.body);
 
-    return res.status(STATUS_CODES.CREATED.code).json({
-      success: true,
-      status: STATUS_CODES.CREATED.status,
-      message: "Car created successfully.",
-      data: createdCar,
-    });
+    return sendResponse(
+      res,
+      201,
+      true,
+      "Car created successfully.",
+      createdCar,
+    );
+
   } catch (error) {
     next(error);
   }
@@ -40,19 +41,21 @@ export const updateCarController = async (req, res, next) => {
     );
 
     if (!updatedCar) {
-      return res.status(STATUS_CODES.NOT_FOUND.code).json({
-        success: false,
-        status: STATUS_CODES.NOT_FOUND.status,
-        message: "Car not found.",
-      });
+      return sendResponse(
+        res,
+        404,
+        false,
+        "Car not found.",
+      );
     }
 
-    return res.status(STATUS_CODES.OK.code).json({
-      success: true,
-      status: STATUS_CODES.OK.status,
-      message: "Car updated successfully.",
-      data: updatedCar,
-    });
+    return sendResponse(
+      res,
+      201,
+      true,
+      "Car updated successfully.",
+      updatedCar,
+    );
   } catch (error) {
     next(error);
   }
@@ -64,19 +67,21 @@ export const deleteCarController = async (req, res, next) => {
     const deleteCarDetails = await deleteCarService(req.params.id);
 
     if (!deleteCarDetails) {
-      return res.status(STATUS_CODES.NOT_FOUND.code).json({
-        success: false,
-        status: STATUS_CODES.NOT_FOUND.status,
-        message: "Car not found.",
-      });
+      return sendResponse(
+        res,
+        404,
+        false,
+        "Car not found.",
+      );
     }
 
-    return res.status(STATUS_CODES.OK.code).json({
-      success: true,
-      status: STATUS_CODES.OK.status,
-      message: "car deleted successfully.",
-      data: deleteCarDetails
-    });
+    return sendResponse(
+      res,
+      201,
+      true,
+      "car deleted successfully.",
+      deleteCarDetails
+    );
   } catch(error) { 
     next(error)
   }
@@ -90,20 +95,21 @@ export const allCarsController = async (req, res, next) => {
     const allCars = await getAllCarsService();
 
     if (!allCars) {
-      return res.status(STATUS_CODES.BAD_REQUEST.code).json({
-        success: false,
-        message: STATUS_CODES.BAD_REQUEST.message,
-        message: "No cars Found."
-      });
+      return sendResponse(
+        res,
+        404,
+        false,
+        "Car not found.",
+      );
     }
 
-    return res.status(STATUS_CODES.OK.code).json({
-      success: true,
-      status: STATUS_CODES.OK.status,
-      message: STATUS_CODES.OK.message,
-      message: "Cars Fetch Successfully.",
-      data: allCars
-    });
+    return sendResponse(
+      res,
+      200,
+      true,
+      "Cars Fetch Successfully.",
+      allCars
+    );
   } catch(error){ 
     next(error);
   }
@@ -115,20 +121,21 @@ export const carbyIdController = async (req, res, next) => {
     const carById = await getCarByIdService(req.params.id);
 
     if(!carById) {
-      res.status(STATUS_CODES.BAD_REQUEST.code).json({
-        success: false,
-        message: STATUS_CODES.BAD_REQUEST.message,
-        message: "Car id not found."
-      });
+      return sendResponse(
+        res,
+        400,
+        false,
+        "Car not found.",
+      );
     }
 
-    res.status(STATUS_CODES.OK.code).json({
-      success: true,
-      status: STATUS_CODES.OK.status,
-      message: STATUS_CODES.OK.message,
-      message: "Cars Fetch Successfully.",
-      data: carById
-    });
+    return sendResponse(
+      res,
+      200,
+      true,
+      "Cars Fetch Successfully.",
+      carById
+    );
   } catch(error) {
     next(error);
   }
@@ -138,12 +145,13 @@ export const searchCarsController = async (req, res, next) => {
   try {
     const result = await searchCarsServices(req.query);
 
-    return res.status(STATUS_CODES.OK.code).json({
-      success: true,
-      message: STATUS_CODES.OK.message,
-      message: "Cars fetched successfully",
+    return sendResponse(
+      res,
+      200,
+      true,
+      "Cars fetched successfully",
       ...result,
-    });
+    );
 
   } catch (error) {
     next(error);
@@ -156,21 +164,21 @@ export const brandSearchController = async (req, res, next) => {
     const carBrand = await searchByBrandService(brand);
 
     if(!carBrand) {
-      return res.status(STATUS_CODES.BAD_REQUEST.code).json({
-        success: false,
-        message: STATUS_CODES.BAD_REQUEST.message,
-        message: "brand not found",
-        status: STATUS_CODES.BAD_REQUEST.code
-      });
+      return sendResponse(
+        res,
+        404,
+        false,
+        "Car Brand not found.",
+      );
     }
 
-    res.status(STATUS_CODES.OK.code).json({
-      success: true,
-      message: STATUS_CODES.OK.message,
-      message: "car brand fetch successfully.",
-      status: STATUS_CODES.OK.code,
-      data: carBrand
-    });
+    return sendResponse(
+      res,
+      200,
+      true,
+      "car brand fetch successfully.",
+      carBrand
+    );
 
   } catch(error) {
     next(error);
@@ -183,20 +191,22 @@ export const categorySearchController = async (req, res, next) => {
     const carCategory = await searchByCategoryService(category);
 
     if(!carCategory || carCategory.length === 0) {
-      return res.status(STATUS_CODES.NOT_FOUND.code).json({
-        success: false,
-        message: "category not found",
-        status: STATUS_CODES.NOT_FOUND.code,
-        data: []
-      });
+      return sendResponse(
+        res,
+        404,
+        false,
+        "Car Category not found.",
+        [],
+      );
     }
 
-    res.status(STATUS_CODES.OK.code).json({
-      success: true,
-      message: "car category fetch successfully.",
-      status: STATUS_CODES.OK.code,
-      data: carCategory
-    });
+    return sendResponse(
+      res,
+      200,
+      true,
+      "car category fetch successfully.",
+      carCategory
+    );
   } catch(error) {
     next(error);
   }
@@ -210,21 +220,23 @@ export const bodyTypeSearchController = async (req, res, next) => {
     const cars = await searchByBodyTypeService(bodyType);
 
     if (cars.length === 0) {
-      return res.status(STATUS_CODES.NOT_FOUND.code).json({
-        success: false,
-        message: "No cars found for this body type",
-        status: STATUS_CODES.NOT_FOUND.code,
-        data: [],
-      });
+      return sendResponse(
+        res,
+        404,
+        false,
+        "Car BodyType not found.",
+        []
+      );
     }
 
-    return res.status(STATUS_CODES.OK.code).json({
-      success: true,
-      message: "Cars fetched successfully by body type",
-      status: STATUS_CODES.OK.code,
-      total: cars.length,
-      data: cars,
-    });
+    return sendResponse(
+      res,
+      200,
+      true,
+      "Cars fetched successfully by body type",
+      cars.length,
+      cars,
+    );
   } catch (error) {
     next(error);
   }
@@ -235,13 +247,14 @@ export const brandListController = async (req, res, next) => {
   try {
     const brands = await carBrandListService();
 
-    res.status(STATUS_CODES.OK.code).json({
-      success: true,
-      message: "car brand list fetch successfully.",
-      message: STATUS_CODES.OK.message,
-      total: brands.length,
-      data: brands,
-    });
+    return sendResponse(
+      res,
+      200,
+      true,
+      "car brand list fetch successfully.",
+      brands.length,
+      brands,
+    );
   } catch(error) {
     next(error);
   }
@@ -252,13 +265,14 @@ export const categoryListController = async (req, res, next) => {
   try {
     const categories = await carCategoryListService();
 
-    res.status(STATUS_CODES.OK.code).json({
-      success: true,
-      message: "car category list fetch successfully.",
-      message: STATUS_CODES.OK.message,
-      total: categories.length,
-      data: categories,
-    });
+    return sendResponse(
+      res,
+      200,
+      true,
+      "car category list fetch successfully.",
+      categories.length,
+      categories,
+    );
   } catch(error) {
     next(error);
   }
@@ -269,13 +283,14 @@ export const bodyTypeListController = async (req, res, next) => {
   try {
     const bodyType = await carBodytypeListService();
 
-    res.status(STATUS_CODES.OK.code).json({
-      success: true,
-      message: "car bodyType list fetch successfully.",
-      message: STATUS_CODES.OK.message,
-      total: bodyType.length,
-      data: bodyType,
-    });
+    return sendResponse(
+      res,
+      200,
+      true,
+      "car bodyType list fetch successfully.",
+      bodyType.length,
+      bodyType,
+    );
   } catch(error) {
     next(error);
   }

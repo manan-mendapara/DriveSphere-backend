@@ -4,11 +4,12 @@ import { STATUS_CODES } from "../helpers/error.helper.js";
 // car creation middleware
 export const validateCarRequest = (req, res, next) => {
   if (!req.body || typeof req.body !== "object" || Array.isArray(req.body)) {
-    return res.status(STATUS_CODES.BAD_REQUEST.code).json({
-      success: false,
-      message: STATUS_CODES.BAD_REQUEST.message,
-      message: "Request body must be a JSON object.",
-    });
+    return sendResponse(
+      res,
+      400,
+      false,
+      "Request body must be a JSON object.",
+    );
   }
 
   const requiredFields = [
@@ -32,12 +33,13 @@ export const validateCarRequest = (req, res, next) => {
   );
 
   if (missingFields.length > 0) {
-    return res.status(STATUS_CODES.BAD_REQUEST.code).json({
-      success: false,
-      message: STATUS_CODES.BAD_REQUEST.message,
-      message: "Required fields are missing.",
+    return sendResponse(
+      res,
+      400,
+      false,
+      "Required fields are missing.",
       missingFields,
-    });
+    );
   }
 
   next();
@@ -61,11 +63,12 @@ const allowedFields = [
 
 export const validateCarUpdate = (req, res, next) => {
   if (!mongoose.isValidObjectId(req.params.id)) {
-    return res.status(STATUS_CODES.BAD_REQUEST.code).json({
-      success: false,
-      message: STATUS_CODES.BAD_REQUEST.message,
-      message: "Invalid car ID.",
-    });
+    return sendResponse(
+      res,
+      400,
+      false,
+      "Invalid car ID.",
+    );
   }
 
   const body = req.body;
@@ -76,11 +79,12 @@ export const validateCarUpdate = (req, res, next) => {
     Array.isArray(body) ||
     Object.keys(body).length === 0
   ) {
-    return res.status(STATUS_CODES.BAD_REQUEST.code).json({
-      success: false,
-      message: STATUS_CODES.BAD_REQUEST.message,
-      message: "Provide at least one field to update.",
-    });
+    return sendResponse(
+      res,
+      400,
+      false,
+      "Provide at least one field to update.",
+    );
   }
 
   const invalidFields = Object.keys(body).filter(
@@ -88,12 +92,13 @@ export const validateCarUpdate = (req, res, next) => {
   );
 
   if (invalidFields.length > 0) {
-    return res.status(STATUS_CODES.BAD_REQUEST.code).json({
-      success: false,
-      message: STATUS_CODES.BAD_REQUEST.message,
-      message: "Unknown or non-editable fields provided.",
+    return sendResponse(
+      res,
+      400,
+      false,
+      "Unknown or non-editable fields provided.",
       invalidFields,
-    });
+    );
   }
 
   next();
@@ -102,11 +107,12 @@ export const validateCarUpdate = (req, res, next) => {
 // delete car
 export const validateCarDelete = (req, res, next) => {
   if (!mongoose.isValidObjectId(req.params.id)) {
-    return res.status(STATUS_CODES.NOT_FOUND.code).json({
-      success: false,
-      message: STATUS_CODES.NOT_FOUND.message,
-      message: "car Id not found",
-    });
+    return sendResponse(
+      res,
+      404,
+      false,
+      "car Id not found",
+    );
   }
   next();
 };
@@ -115,11 +121,12 @@ export const validateCarDelete = (req, res, next) => {
 // get car by id
 export const validateCarId = (req, res, next) => {
   if (!mongoose.isValidObjectId(req.params.id)) {
-    return res.status(STATUS_CODES.NOT_FOUND.code).json({
-      success: false,
-      message: STATUS_CODES.NOT_FOUND.message,
-      message: "car Id not found",
-    });
+    return sendResponse(
+      res,
+      404,
+      false,
+      "car Id not found",
+    );
   }
   next();
 };
@@ -152,28 +159,34 @@ export const validateCarSearch = (req, res, next) => {
       value.trim() === "" ||
       !Number.isFinite(Number(value))
     ) {
-      return res.status(400).json({
-        success: false,
-        message: `${field} must be a valid number`,
-      });
+      return sendResponse(
+        res,
+        400,
+        false,
+        `${field} must be a valid number`,
+      );
     }
   }
 
   for (const field of ["minPrice", "maxPrice"]) {
     if (q[field] !== undefined && Number(q[field]) < 0) {
-      return res.status(400).json({
-        success: false,
-        message: `${field} cannot be negative`,
-      });
+    return sendResponse(
+      res,
+      400,
+      false,
+      `${field} cannot be negative`,
+      );
     }
   }
 
   for (const field of ["minYear", "maxYear"]) {
     if (q[field] !== undefined && !Number.isInteger(Number(q[field]))) {
-      return res.status(400).json({
-        success: false,
-        message: `${field} must be a whole number`,
-      });
+    return sendResponse(
+      res,
+      400,
+      false,
+      `${field} must be a whole number`,
+      );
     }
   }
 
@@ -181,17 +194,21 @@ export const validateCarSearch = (req, res, next) => {
   const limit = Number(q.limit ?? 10);
 
   if (!Number.isInteger(page) || page < 1) {
-    return res.status(400).json({
-      success: false,
-      message: "page must be a positive integer",
-    });
+    return sendResponse(
+      res,
+      400,
+      false,
+      "page must be a positive integer",
+    );
   }
 
   if (!Number.isInteger(limit) || limit < 1 || limit > 100) {
-    return res.status(400).json({
-      success: false,
-      message: "limit must be between 1 and 100",
-    });
+    return sendResponse(
+      res,
+      400,
+      false,
+      "limit must be between 1 and 100",
+    );
   }
 
   if (
@@ -199,10 +216,12 @@ export const validateCarSearch = (req, res, next) => {
     q.maxPrice !== undefined &&
     Number(q.minPrice) > Number(q.maxPrice)
   ) {
-    return res.status(400).json({
-      success: false,
-      message: "minPrice cannot exceed maxPrice",
-    });
+    return sendResponse(
+      res,
+      400,
+      false,
+      "minPrice cannot exceed maxPrice",
+    );
   }
 
   if (
@@ -210,26 +229,32 @@ export const validateCarSearch = (req, res, next) => {
     q.maxYear !== undefined &&
     Number(q.minYear) > Number(q.maxYear)
   ) {
-    return res.status(400).json({
-      success: false,
-      message: "minYear cannot exceed maxYear",
-    });
+    return sendResponse(
+      res,
+      400,
+      false,
+      "minYear cannot exceed maxYear",
+    );
   }
 
   for (const field of ["isFeatured", "sunroof"]) {
     if (q[field] !== undefined && !["true", "false"].includes(q[field])) {
-      return res.status(400).json({
-        success: false,
-        message: `${field} must be true or false`,
-      });
+    return sendResponse(
+      res,
+      400,
+      false,
+      `${field} must be true or false`,
+      );
     }
   }
 
   if (q.order !== undefined && !["asc", "desc"].includes(q.order)) {
-    return res.status(400).json({
-      success: false,
-      message: "order must be asc or desc",
-    });
+    return sendResponse(
+      res,
+      400,
+      false,
+      "order must be asc or desc",
+    );
   }
 
   next();
@@ -241,11 +266,12 @@ export const validateBrand = async (req, res, next) => {
     const brand = req.params.brand;
 
     if(!brand) {
-        res.status(STATUS_CODES.BAD_REQUEST.code).json({
-            success: false,
-            message: STATUS_CODES.BAD_REQUEST.message,
-            message: "car brand is not available",
-        });
+      return sendResponse(
+        res,
+        400,
+        false,
+        "car brand is not available",
+      );
     }
     next();
 }

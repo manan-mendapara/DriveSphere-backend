@@ -1,5 +1,6 @@
 
 import { STATUS_CODES } from "../helpers/error.helper.js";
+import { sendResponse } from "../helpers/response.helper.js";
 
 export const errorHandler = (err, req, res, next) => {
     if (res.headersSent) {
@@ -25,11 +26,13 @@ export const errorHandler = (err, req, res, next) => {
         });
     }
 
-        console.error(err);
+    console.error(err);
 
-        return res.status(STATUS_CODES.INTERNAL_SERVER_ERROR.code).json({
-            success: false,
-            status: STATUS_CODES.INTERNAL_SERVER_ERROR.status,
-            message: STATUS_CODES.INTERNAL_SERVER_ERROR.message,
-        });
+        
+    return sendResponse(
+        500,
+        false,
+        "internal server error."
+    );
 };
+
