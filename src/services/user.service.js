@@ -4,7 +4,7 @@ import jwt  from "jsonwebtoken";
 
 // create user
 export const createUserService = async (userData) => {
-    const user = User.create(userData);
+    const user = await User.create(userData);
     return user;
 }
 

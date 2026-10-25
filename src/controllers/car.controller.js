@@ -15,9 +15,9 @@ import {
 import { sendResponse } from "../helpers/response.helper.js";
 
 // create car controller
-export const createCarController = async (req, res, next) => {
+export const createCarController = async (_req, res, next) => {
   try {
-    const createdCar = await createCarService(req.body);
+    const createdCar = await createCarService(_req.body);
 
     return sendResponse(
       res,
@@ -33,11 +33,11 @@ export const createCarController = async (req, res, next) => {
 };
 
 // update controller
-export const updateCarController = async (req, res, next) => {
+export const updateCarController = async (_req, res, next) => {
   try {
     const updatedCar = await updateCarService(
-      req.params.id,
-      req.body
+      _req.params.id,
+      _req.body
     );
 
     if (!updatedCar) {
@@ -51,7 +51,7 @@ export const updateCarController = async (req, res, next) => {
 
     return sendResponse(
       res,
-      201,
+      200,
       true,
       "Car updated successfully.",
       updatedCar,
@@ -62,9 +62,9 @@ export const updateCarController = async (req, res, next) => {
 };
 
 // delete car controller
-export const deleteCarController = async (req, res, next) => {
+export const deleteCarController = async (_req, res, next) => {
   try {
-    const deleteCarDetails = await deleteCarService(req.params.id);
+    const deleteCarDetails = await deleteCarService(_req.params.id);
 
     if (!deleteCarDetails) {
       return sendResponse(
@@ -77,20 +77,20 @@ export const deleteCarController = async (req, res, next) => {
 
     return sendResponse(
       res,
-      201,
+      200,
       true,
-      "car deleted successfully.",
+      "Car deleted successfully.",
       deleteCarDetails
     );
-  } catch(error) { 
-    next(error)
+  } catch (error) {
+    next(error);
   }
-}
+};
 
 // ================================ user car display api =========================================== //
 
 // all cars
-export const allCarsController = async (req, res, next) => {
+export const allCarsController = async (_req, res, next) => {
   try {
     const allCars = await getAllCarsService();
 
@@ -107,23 +107,23 @@ export const allCarsController = async (req, res, next) => {
       res,
       200,
       true,
-      "Cars Fetch Successfully.",
+      "Cars fetched successfully.",
       allCars
     );
-  } catch(error){ 
+  } catch (error) {
     next(error);
   }
 }
 
 // get car by id 
-export const carbyIdController = async (req, res, next) => {
+export const carbyIdController = async (_req, res, next) => {
   try {
-    const carById = await getCarByIdService(req.params.id);
+    const carById = await getCarByIdService(_req.params.id);
 
     if(!carById) {
       return sendResponse(
         res,
-        400,
+        404,
         false,
         "Car not found.",
       );
@@ -133,7 +133,7 @@ export const carbyIdController = async (req, res, next) => {
       res,
       200,
       true,
-      "Cars Fetch Successfully.",
+      "Car fetched successfully.",
       carById
     );
   } catch(error) {
@@ -141,16 +141,17 @@ export const carbyIdController = async (req, res, next) => {
   }
 }
 
-export const searchCarsController = async (req, res, next) => {
+export const searchCarsController = async (_req, res, next) => {
   try {
-    const result = await searchCarsServices(req.query);
-
+    console.log("search car called.", _req.query);
+    const result = await searchCarsServices(_req.query);
+    // return res.status(200).json("done");
     return sendResponse(
       res,
       200,
       true,
       "Cars fetched successfully",
-      ...result,
+      result,
     );
 
   } catch (error) {
@@ -158,9 +159,9 @@ export const searchCarsController = async (req, res, next) => {
   }
 };
 
-export const brandSearchController = async (req, res, next) => {
+export const brandSearchController = async (_req, res, next) => {
   try {
-    const { brand } = req.params;
+    const { brand } = _req.params;
     const carBrand = await searchByBrandService(brand);
 
     if(!carBrand) {
@@ -176,7 +177,7 @@ export const brandSearchController = async (req, res, next) => {
       res,
       200,
       true,
-      "car brand fetch successfully.",
+      "Car brand fetched successfully.",
       carBrand
     );
 
@@ -185,9 +186,9 @@ export const brandSearchController = async (req, res, next) => {
   }
 }
 
-export const categorySearchController = async (req, res, next) => {
+export const categorySearchController = async (_req, res, next) => {
   try {
-    const { category } = req.params;
+    const { category } = _req.params;
     const carCategory = await searchByCategoryService(category);
 
     if(!carCategory || carCategory.length === 0) {
@@ -204,7 +205,7 @@ export const categorySearchController = async (req, res, next) => {
       res,
       200,
       true,
-      "car category fetch successfully.",
+      "Car category fetched successfully.",
       carCategory
     );
   } catch(error) {
@@ -213,9 +214,9 @@ export const categorySearchController = async (req, res, next) => {
 }
 
 // bodytype search
-export const bodyTypeSearchController = async (req, res, next) => {
+export const bodyTypeSearchController = async (_req, res, next) => {
   try {
-    const { bodyType } = req.params;
+    const { bodyType } = _req.params;
 
     const cars = await searchByBodyTypeService(bodyType);
 
@@ -234,8 +235,7 @@ export const bodyTypeSearchController = async (req, res, next) => {
       200,
       true,
       "Cars fetched successfully by body type",
-      cars.length,
-      cars,
+      { count: cars.length, data: cars },
     );
   } catch (error) {
     next(error);
@@ -243,7 +243,7 @@ export const bodyTypeSearchController = async (req, res, next) => {
 };
 
 // brand list 
-export const brandListController = async (req, res, next) => {
+export const brandListController = async (_req, res, next) => {
   try {
     const brands = await carBrandListService();
 
@@ -251,9 +251,8 @@ export const brandListController = async (req, res, next) => {
       res,
       200,
       true,
-      "car brand list fetch successfully.",
-      brands.length,
-      brands,
+      "Car brand list fetched successfully.",
+      { count: brands.length, data: brands }
     );
   } catch(error) {
     next(error);
@@ -261,7 +260,7 @@ export const brandListController = async (req, res, next) => {
 }
 
 // category list
-export const categoryListController = async (req, res, next) => {
+export const categoryListController = async (_req, res, next) => {
   try {
     const categories = await carCategoryListService();
 
@@ -269,9 +268,8 @@ export const categoryListController = async (req, res, next) => {
       res,
       200,
       true,
-      "car category list fetch successfully.",
-      categories.length,
-      categories,
+      "Car category list fetched successfully.",
+      { count: categories.length, data: categories }
     );
   } catch(error) {
     next(error);
@@ -279,7 +277,7 @@ export const categoryListController = async (req, res, next) => {
 }
 
 // bodytype lis
-export const bodyTypeListController = async (req, res, next) => {
+export const bodyTypeListController = async (_req, res, next) => {
   try {
     const bodyType = await carBodytypeListService();
 
@@ -287,9 +285,8 @@ export const bodyTypeListController = async (req, res, next) => {
       res,
       200,
       true,
-      "car bodyType list fetch successfully.",
-      bodyType.length,
-      bodyType,
+      "Car bodyType list fetched successfully.",
+      { count: bodyType.length, data: bodyType }
     );
   } catch(error) {
     next(error);

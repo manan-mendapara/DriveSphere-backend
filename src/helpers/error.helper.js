@@ -33,7 +33,7 @@ export const STATUS_CODES = {
   NOT_FOUND: {
     code: 404,
     status: "Not Found",
-    message: "Page not found",
+    message: "Resource not found",
   },
 
   METHOD_NOT_ALLOWED: {

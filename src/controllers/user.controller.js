@@ -7,7 +7,7 @@ export const createUserController = async (req, res, next) => {
   try {
 
     const { username, email, password } = req.body;
-    const hashedpassword = await bcrypt.hash(password, 8);
+    const hashedpassword = await bcrypt.hash(password, 12);
     const createdUser = await createUserService({
       username,
       email, 
@@ -18,7 +18,7 @@ export const createUserController = async (req, res, next) => {
       res,
       201,
       true,
-      "user created successfully.",
+      "User created successfully.",
       createdUser
     );
   } catch(error) {

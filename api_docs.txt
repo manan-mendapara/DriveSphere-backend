@@ -1,0 +1,133 @@
+# DriveSphere Backend API Documentation
+
+## Overview
+This document describes all RESTful API endpoints available in the DriveSphere backend application, including their HTTP methods, paths, descriptions, authentication requirements, and test criteria for validation.
+
+## Base URL
+All endpoints are prefixed with `/api` as configured in `src/app.js`.
+
+---
+
+## Table of Contents
+1. [Car Endpoints]                    (#car-endpoints-apicars)
+2. [User Endpoints]                   (#user-endpoints-apiuser)
+3. [Comparison Endpoints]             (#comparison-endpoints-apicomparison)
+4. [Wishlist Endpoints]               (#wishlist-endpoints-apiwishlist)
+5. [Showroom Endpoints]               (#showroom-endpoints-apishowrooms)
+6. [Service Center Endpoints]         (#service-center-endpoints-apiservice-centers)
+7. [Authentication & Error Handling]  (#authentication--error-handling)
+8. [Response Format]                   (#response-format)
+
+---
+
+## Car Endpoints (`http://localhost:5000/api/cars`)
+
+| Method | Endpoint                                             | Description                     | Auth Required | Role   | Test Criteria |
+|--------|----------                                            |-------------                    |---------------|------  |---------------|
+| POST`` | `http://localhost:5000/api/cars/`                    | Create a new car                |      Yes      | Admin  | - Valid car data → 201 Created<br>- Missing required fields → 400 Bad Request<br>- Invalid data → 422 Unprocessable Entity<br>- Non-admin user → 403 Forbidden<br>- No auth token → 401 Unauthorized |
+| PATCH` | `http://localhost:5000/api/cars/:id`                 | Update an existing car          |      Yes      | Admin  | - Valid ID & data → 200 OK<br>- Invalid ID format → 400 Bad Request<br>- Car not found → 404 Not Found<br>- Non-admin user → 403 Forbidden<br>- No auth token → 401 Unauthorized |
+| DELETE | `http://localhost:5000/api/cars/:id`                 | Delete a car                    |      Yes      | Admin  | - Valid ID → 200 OK<br>- Invalid ID format → 400 Bad Request<br>- Car not found → 404 Not Found<br>- Non-admin user → 403 Forbidden<br>- No auth token → 401 Unauthorized |
+| GET    | `http://localhost:5000/api/cars/`                    | Get all cars                    |      No       | -      | - Returns 200 OK with car array<br>- Empty array if no cars exist |
+| GET    | `http://localhost:5000/api/cars/search/:id`          | Get car by ID                   |      No       | -      | - Valid ID → 200 OK with car object<br>- Invalid ID format → 400 Bad Request<br>- Car not found → 404 Not Found |
+| GET    | `http://localhost:5000/api/cars/search`              | Search cars with query params   |      No       | -      | - Valid search params → 200 OK with filtered results<br>- Invalid search params → 400 Bad Request |
+| GET    | `http://localhost:5000/api/cars/brand/:brand`        | Search cars by brand            |      No       | -      | - Valid brand → 200 OK with matching cars<br>- Invalid brand format → 400 Bad Request<br>- No cars found → 404 Not Found |
+| GET    | `http://localhost:5000/api/cars/brands`              | Get list of all car brands      |      No       | -      | - Returns 200 OK with brand list<br>- Empty array if no brands exist |
+| GET    | `http://localhost:5000/api/cars/category`            | Get list of all car categories  |      No       | -      | - Returns 200 OK with category list<br>- Empty array if no categories exist |
+| GET    | `http://localhost:5000/api/cars/category/:category`  | Search cars by category         |      No       | -      | - Valid category → 200 OK with matching cars<br>- Invalid category format → 400 Bad Request<br>- No cars found → 404 Not Found |
+| GET    | `http://localhost:5000/api/cars/bodytype`            | Get list of all car body types  |      No       | -      | - Returns 200 OK with body type list<br>- Empty array if no body types exist |
+| GET    | `http://localhost:5000/api/cars/bodytype/:bodyType`  | Search cars by body type        |      No       | -      | - Valid body type → 200 OK with matching cars<br>- Invalid body type format → 400 Bad Request<br>- No cars found → 404 Not Found |
+
+---
+
+## User Endpoints (`http://localhost:5000/api/user`)
+
+| Method  | Endpoint                                | Description       | Auth Required       | Role | Test Criteria |
+|-------- |----------                               |-------------      |---------------      |------|---------------|
+| POST    | `http://localhost:5000/api/user/`       | Create a new user | Yes (via userCheck) |   -  | - Valid user data → 201 Created<br>- Missing required fields → 400 Bad Request<br>- Invalid email format → 400 Bad Request<br>- Duplicate email → 409 Conflict<br>- Weak password → 422 Unprocessable Entity |
+| POST    | `http://localhost:5000/api/user/login`  | Authenticate user | No                  |   -  | - Valid credentials → 200 OK with user data & token<br>- Invalid email → 401 Unauthorized<br>- Invalid password → 401 Unauthorized<br>- Non-existent user → 401 Unauthorized |
+
+---
+
+## Comparison Endpoints (`http://localhost:5000/api/comparison`)
+
+| Method  | Endpoint                                      | Description              | Auth Required |  Role                  | Test Criteria |
+|-------- |----------                                     |--------------------------|-----          |---------------         |
+| POST    | `http://localhost:5000/api/comparison/`       | Create a new comparison  |      Yes      | Any authenticated user | - Valid car IDs → 201 Created<br>- Invalid car IDs → 400 Bad Request<br>- Empty car array → 400 Bad Request<br>- No auth token → 401 Unauthorized |
+| GET     | `http://localhost:5000/api/comparison/`       | Get user's comparison    |      Yes      | Any authenticated user | - Comparison exists → 200 OK with comparison data<br>- No comparison found → 404 Not Found<br>- No auth token → 401 Unauthorized |
+| DELETE  | `http://localhost:5000/api/comparison/`       | Delete user's comparison |      Yes      | Any authenticated user | - Comparison exists → 200 OK<br>- No comparison found → 404 Not Found<br>- No auth token → 401 Unauthorized |
+
+---
+
+## Wishlist Endpoints (`http://localhost:5000/api/wishlist`)
+
+| Method  | Endpoint                                    | Description               | Auth Required | Role                   | Test Criteria |
+|-------- |----------                                   |-------------              |--------       |------                  |--------------|
+| POST    | `http://localhost:5000/api/wishlist/:carId` | Add car to wishlist       |     Yes       | Any authenticated user | - Valid car ID → 200 OK<br>- Invalid car ID format → 400 Bad Request<br>- Car not found → 404 Not Found<br>- Already in wishlist → 409 Conflict (if implemented)<br>- No auth token → 401 Unauthorized |
+| GET     | `http://localhost:5000/api/wishlist/`       | Get user's wishlist       |     Yes       | Any authenticated user | - Returns 200 OK with wishlist array<br>- Empty array if no items in wishlist |
+| DELETE  | `http://localhost:5000/api/wishlist/:carId` | Remove car from wishlist  |     Yes       | Any authenticated user | - Valid car ID in wishlist → 200 OK<br>- Invalid car ID format → 400 Bad Request<br>- Car not in wishlist → 404 Not Found<br>- No auth token → 401 Unauthorized |
+
+---
+
+## Showroom Endpoints (`http://localhost:5000/api/showrooms`)
+
+| Method | Endpoint                                      | Description            | Auth Required | Role  | Test Criteria |
+|--------|----------                                     |-------------           |---------------|------ |---------------|
+| GET    | `http://localhost:5000/api/showrooms/nearby`  | Get nearby showrooms   |     No        |   -   | - Valid lat/lng params → 200 OK with showroom array<br>- Missing lat/lng → 400 Bad Request<br>- Invalid lat/lng format → 400 Bad Request<br>- No showrooms found → 200 OK with empty array |
+
+---
+
+## Service Center Endpoints (`http://localhost:5000/api/service-centers`)
+
+| Method  | Endpoint                                           | Description                | Auth Required | Role  | Test Criteria |
+|-------- |----------                                          |-------------               |---------------|------ |---------------|
+| GET     | `http://localhost:5000/api/service-centers/nearby` | Get nearby service centers |      No       |   -   | - Valid lat/lng/maxDistance params → 200 OK with service center array<br>- Missing lat/lng → 400 Bad Request<br>- Invalid lat/lng format → 400 Bad Request<br>- Invalid maxDistance → 400 Bad Request (if validation exists)<br>- No service centers found → 200 OK with empty array |
+
+---
+
+## Authentication & Error Handling
+
+### Authentication
+- All protected endpoints require a valid JWT token in the `Authorization: Bearer <token>` header
+- Token is verified by `authMiddleware` which attaches user data to `req.user`
+- Admin endpoints additionally check `req.user.role === "admin"` via `adminMiddleware`
+
+### Common Error Responses
+- `400 Bad Request`: Invalid request data, missing parameters, or validation failures
+- `401 Unauthorized`: Missing or invalid authentication token
+- `403 Forbidden`: Authenticated but insufficient permissions (non-admin trying admin endpoints)
+- `404 Not Found`: Requested resource doesn't exist
+- `409 Conflict`: Resource already exists (e.g., duplicate email)
+- `422 Unprocessable Entity`: Validation failed on semantically correct data
+- `500 Internal Server Error`: Unexpected server error
+
+### Success Response Format
+Most endpoints use the `sendResponse` helper which returns:
+```json
+{
+  "success": boolean,
+  "message": string,
+  "data": any,          // For single items or arrays
+  "count": number       // Only present for list endpoints that return arrays
+}
+```
+
+List endpoints that return arrays include both `data` (the array) and `count` (array length) in their response. Single item endpoints only include `data`.
+
+---
+
+## How to Convert This to PDF
+
+To create a PDF from this documentation:
+
+1. **Copy** this entire document
+2. **Paste** into a markdown editor (like Typora, Obsidian, or VS Code with markdown preview)
+3. **Export/Print** as PDF using the editor's export function
+   - OR paste into a word processor (Word, Google Docs) and export as PDF
+   - OR use `pandoc`: `pandoc api_docs.md -o api_docs.pdf`
+   - OR use browser print-to-PDF: paste into an HTML file and print to PDF
+
+---
+
+**Document Generated**: 2026-10-16
+**Application**: DriveSphere Backend
+**Version**: Based on current codebase state

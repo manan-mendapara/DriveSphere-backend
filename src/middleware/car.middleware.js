@@ -257,6 +257,33 @@ export const validateCarSearch = (req, res, next) => {
     );
   }
 
+  // Check if at least one search filter is provided
+  const hasSearchFilter =
+    q.search?.trim() ||
+    q.brand ||
+    q.model ||
+    q.variant ||
+    q.category ||
+    q.bodyType ||
+    q.fuelType ||
+    q.transmission ||
+    q.seatingCapacity !== undefined ||
+    q.minPrice !== undefined ||
+    q.maxPrice !== undefined ||
+    q.minYear !== undefined ||
+    q.maxYear !== undefined ||
+    q.isFeatured !== undefined ||
+    q.sunroof !== undefined;
+
+  if (!hasSearchFilter) {
+    return sendResponse(
+      res,
+      400,
+      false,
+      "At least one search filter is required (search, brand, category, bodyType, etc.)",
+    );
+  }
+
   next();
 };
 
