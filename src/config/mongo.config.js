@@ -1,25 +1,21 @@
-import dotenv from "dotenv";
 import mongoose from "mongoose";
 import dns from "node:dns";
-dotenv.config();
-dns.setServers(["8.8.8.8", "8.8.4.4"]);
 
+dns.setServers(["1.1.1.1", "8.8.8.8"]);
 const connectDB = async () => {
-  try {
-    const mongourl = process.env.MONGOURL;
+  const mongoUrl = process.env.MONGOURL;
 
-    if(!mongourl){
-        console.log("mongo url is missing from .env");
-    }
-
-    await mongoose.connect(mongourl);
-    console.log("MongoDB connected successfully");
-
-  } catch (error) {
-    console.error("MongoDB connection failed:", error.message);
-    process.exit(1);
-    throw error
+  if (!mongoUrl) {
+    throw new Error("MONGOURL is not configured");
   }
+
+  if (mongoose.connection.readyState === 1) {
+    return;
+  }
+
+  await mongoose.connect(mongoUrl);
+
+  console.log("MongoDB connected successfully");
 };
 
 export default connectDB;

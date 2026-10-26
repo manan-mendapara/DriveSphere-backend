@@ -1,13 +1,12 @@
 import { createUserService, loginUserService } from "../services/user.service.js";
-import { STATUS_CODES } from "../helpers/error.helper.js";
 import { sendResponse } from "../helpers/response.helper.js";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 export const createUserController = async (req, res, next) => {
   try {
 
     const { username, email, password } = req.body;
-    const hashedpassword = await bcrypt.hash(password, 12);
+    const hashedpassword = await bcrypt.hash(password, 10);
     const createdUser = await createUserService({
       username,
       email, 

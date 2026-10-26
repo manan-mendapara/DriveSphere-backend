@@ -1,6 +1,6 @@
 import { STATUS_CODES } from "../helpers/error.helper.js";
 import User from "../models/user.model.js";
-import bcrypt from "bcrypt";
+// import bcrypt from "bcryptjs";
 // import userModel from "../models/user.model.js";
 
 export const userCheck = async (req, res, next) => {
