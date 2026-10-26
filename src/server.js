@@ -1,8 +1,13 @@
 import dotenv from "dotenv";
+import dns from "node:dns";
 import app from "./app.js";
 import connectDatabase from "./config/mongo.config.js";
 
 dotenv.config();
+
+// Local Node.js development only
+dns.setServers(["1.1.1.1", "8.8.8.8"]);
+
 const PORT = process.env.PORT || 5100;
 const HOST = "127.0.0.1";
 
