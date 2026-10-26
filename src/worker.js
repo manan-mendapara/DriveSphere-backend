@@ -1,15 +1,12 @@
 import { httpServerHandler } from "cloudflare:node";
 import app from "./app.js";
-import connectDB from "./config/mongo.config.js";
 
 app.get("/", (req, res) => {
-  res.json({
+  res.status(200).json({
     success: true,
     message: "DriveSphere backend is running",
   });
 });
-
-await connectDB();
 
 app.listen(3000);
 
