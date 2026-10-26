@@ -1,7 +1,7 @@
 {
   "name": "drivesphere-backend",
   "version": "1.0.0",
-  "description": "��#\u0000 \u0000D\u0000r\u0000i\u0000v\u0000e\u0000S\u0000p\u0000h\u0000e\u0000r\u0000e\u0000-\u0000b\u0000a\u0000c\u0000k\u0000e\u0000n\u0000d\u0000\r\u0000 \u0000",
+  "description": "DriveSphere backend is running",
   "homepage": "https://github.com/manan-mendapara/DriveSphere-backend#readme",
   "bugs": {
     "url": "https://github.com/manan-mendapara/DriveSphere-backend/issues"
@@ -13,18 +13,13 @@
   "type": "module",
   "main": "server.js",
   "scripts": {
-    "dev": "nodemon ./src/server.js",
-    "start": "node ./src/server.js",
+    "dev": "wrangler dev",
+    "start": "wrangler publish",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "bcryptjs": "^3.0.3",
-    "dotenv": "^18.0.7",
-    "express": "^5.3.0",
-    "jsonwebtoken": "^9.0.3",
-    "mongodb": "^7.7.0",
-    "mongoose": "^9.11.2",
-    "nodemon": "^3.1.14"
+    "hono": "^4.0.0",
+    "dotenv": "^18.0.7"
   },
   "devDependencies": {
     "wrangler": "^4.152.0"

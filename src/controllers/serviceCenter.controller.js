@@ -1,49 +1,72 @@
+import { createServiceCenterService, getServiceCenterService, getAllServiceCentersService } from "../services/serviceCenter.service.js";
+import { sendResponse } from "../helpers/response.helper.js";
 
-import {
-  getNearbyServiceCentersService,
-} from "../services/serviceCenter.service.js";
-
-export const getNearbyServiceCentersController = async (
-  req,
-  res,
-  next
-) => {
+export const createServiceCenterController = async (c, next) => {
   try {
-    const { lat, lng, maxDistance } = req.query;
+    const serviceCenter = await createServiceCenterService(c.req.json());
 
-    // Validate required query parameters
-    if (
-      lat === undefined ||
-      lng === undefined ||
-      lat.trim() === "" ||
-      lng.trim() === ""
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: "Latitude and longitude are required.",
-        data: [],
-      });
+    return sendResponse(
+      c,
+      201,
+      true,
+      "Service center created successfully.",
+      serviceCenter
+    );
+  } catch (error) {
+    return c.json({
+      success: false,
+      message: error.message,
+      data: null,
+    }, 500);
+  }
+};
+
+export const getServiceCenterController = async (c, next) => {
+  try {
+    const { id } = c.req.param();
+    const serviceCenter = await getServiceCenterService(id);
+
+    if (!serviceCenter) {
+      return sendResponse(
+        c,
+        404,
+        false,
+        "Service center not found.",
+      );
     }
 
-    const latitude = Number(lat);
-    const longitude = Number(lng);
-
-    const distance =
-      maxDistance === undefined ? 10000 : Number(maxDistance);
-
-    const serviceCenters = await getNearbyServiceCentersService(
-      latitude,
-      longitude,
-      distance
+    return sendResponse(
+      c,
+      200,
+      true,
+      "Service center fetched successfully.",
+      serviceCenter
     );
-
-    return res.status(200).json({
-      success: true,
-      message: "Nearby service centers fetched successfully.",
-      count: serviceCenters.length,
-      data: serviceCenters,
-    });
   } catch (error) {
-    next(error);
+    return c.json({
+      success: false,
+      message: error.message,
+      data: null,
+    }, 500);
+  }
+};
+
+export const getAllServiceCentersController = async (c, next) => {
+  try {
+    const serviceCenters = await getAllServiceCentersService();
+
+    return sendResponse(
+      c,
+      200,
+      true,
+      "Service centers fetched successfully.",
+      serviceCenters
+    );
+  } catch (error) {
+    return c.json({
+      success: false,
+      message: error.message,
+      data: null,
+    }, 500);
   }
 };

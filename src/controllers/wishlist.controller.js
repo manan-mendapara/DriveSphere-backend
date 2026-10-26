@@ -1,83 +1,72 @@
-
-import {
-  addToWishlistService,
-  getWishlistService,
-  removeFromWishlistService,
-} from "../services/wishlist.service.js";
-
+import { createWishlistService, getWishlistService, getAllWishlistService } from "../services/wishlist.service.js";
 import { sendResponse } from "../helpers/response.helper.js";
 
-const getUserId = (req) => req.user?.id ?? req.user?._id;
-
-// Add a car to wishlist
-export const addToWishlistController = async (req, res, next) => {
+export const createWishlistController = async (c, next) => {
   try {
-    const userId = getUserId(req);
-    const { carId } = req.params;
-
-    if (!userId) {
-      return sendResponse(res, 401, false, "Please log in.");
-    }
-
-    const wishlist = await addToWishlistService(userId, carId);
+    const wishlist = await createWishlistService(c.req.json());
 
     return sendResponse(
-      res,
-      200,
+      c,
+      201,
       true,
-      "Car added to wishlist successfully.",
+      "Wishlist item created successfully.",
       wishlist
     );
   } catch (error) {
-    next(error);
+    return c.json({
+      success: false,
+      message: error.message,
+      data: null,
+    }, 500);
   }
 };
 
-
-// Get user's wishlist
-export const getWishlistController = async (req, res, next) => {
+export const getWishlistController = async (c, next) => {
   try {
-    const userId = getUserId(req);
+    const { id } = c.req.param();
+    const wishlist = await getWishlistService(id);
 
-    if (!userId) {
-      return sendResponse(res, 401, false, "Please log in.");
+    if (!wishlist) {
+      return sendResponse(
+        c,
+        404,
+        false,
+        "Wishlist item not found.",
+      );
     }
 
-    const wishlist = await getWishlistService(userId);
-
     return sendResponse(
-      res,
+      c,
       200,
       true,
-      "Wishlist fetched successfully.",
+      "Wishlist item fetched successfully.",
       wishlist
     );
   } catch (error) {
-    next(error);
+    return c.json({
+      success: false,
+      message: error.message,
+      data: null,
+    }, 500);
   }
 };
 
-
-// Remove a car from wishlist
-export const removeFromWishlistController = async (req, res, next) => {
+export const getAllWishlistController = async (c, next) => {
   try {
-    const userId = getUserId(req);
-    const { carId } = req.params;
-
-    if (!userId) {
-      return sendResponse(res, 401, false, "Please log in.");
-    }
-
-    const wishlist = await removeFromWishlistService(userId, carId);
+    const wishlistItems = await getAllWishlistService();
 
     return sendResponse(
-      res,
+      c,
       200,
       true,
-      "Car removed from wishlist successfully.",
-      wishlist
+      "Wishlist items fetched successfully.",
+      wishlistItems
     );
   } catch (error) {
-    next(error);
+    return c.json({
+      success: false,
+      message: error.message,
+      data: null,
+    }, 500);
   }
 };

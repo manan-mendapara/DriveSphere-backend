@@ -1,76 +1,73 @@
-
-import {
-  createComparisonService,
-  getComparisonService,
-  deleteComparisonService,
-} from "../services/comparison.service.js";
-
+import { createComparisonService, getComparisonService, getAllComparisonsService } from "../services/comparison.service.js";
 import { sendResponse } from "../helpers/response.helper.js";
 
-const getUserId = (req) => req.user?.id ?? req.user?._id;
-
-export const createComparisonController = async (req, res, next) => {
+export const createComparisonController = async (c, next) => {
   try {
-    const userId = getUserId(req);
-    const { cars } = req.body;
-
-    if (!userId) {
-      return sendResponse(res, 401, false, "Please log in.");
-    }
-
-    const comparison = await createComparisonService(userId, cars);
+    const { carIds } = c.req.json();
+    const comparison = await createComparisonService(carIds);
 
     return sendResponse(
-      res,
+      c,
       201,
       true,
       "Comparison created successfully.",
       comparison
     );
   } catch (error) {
-    next(error);
+    return c.json({
+      success: false,
+      message: error.message,
+      data: null,
+    }, 500);
   }
 };
 
-export const getComparisonController = async (req, res, next) => {
+export const getComparisonController = async (c, next) => {
   try {
-    const userId = getUserId(req);
+    const { id } = c.req.param();
+    const comparison = await getComparisonService(id);
 
-    if (!userId) {
-      return sendResponse(res, 401, false, "Please log in.");
+    if (!comparison) {
+      return sendResponse(
+        c,
+        404,
+        false,
+        "Comparison not found.",
+      );
     }
 
-    const comparison = await getComparisonService(userId);
-
     return sendResponse(
-      res,
+      c,
       200,
       true,
       "Comparison fetched successfully.",
       comparison
     );
   } catch (error) {
-    next(error);
+    return c.json({
+      success: false,
+      message: error.message,
+      data: null,
+    }, 500);
   }
 };
 
-export const deleteComparisonController = async (req, res, next) => {
+export const getAllComparisonsController = async (c, next) => {
   try {
-    const userId = getUserId(req);
-
-    if (!userId) {
-      return sendResponse(res, 401, false, "Please log in.");
-    }
-
-    await deleteComparisonService(userId);
+    const comparisons = await getAllComparisonsService();
 
     return sendResponse(
-      res,
+      c,
       200,
       true,
-      "Comparison deleted successfully."
+      "Comparisons fetched successfully.",
+      comparisons
     );
   } catch (error) {
-    next(error);
+    return c.json({
+      success: false,
+      message: error.message,
+      data: null,
+    }, 500);
   }
 };

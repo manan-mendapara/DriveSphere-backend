@@ -1,48 +1,52 @@
-import { 
-  carBodytypeListService, 
-  carBrandListService, 
-  carCategoryListService, 
-  createCarService, 
-  deleteCarService, 
-  getAllCarsService, 
-  getCarByIdService, 
-  searchByBrandService, 
-  searchByCategoryService, 
-  searchByBodyTypeService, 
-  searchCarsServices, 
-  updateCarService,  
+import {
+  carBodytypeListService,
+  carBrandListService,
+  carCategoryListService,
+  createCarService,
+  deleteCarService,
+  getAllCarsService,
+  getCarByIdService,
+  searchByBrandService,
+  searchByCategoryService,
+  searchByBodyTypeService,
+  searchCarsServices,
+  updateCarService,
 } from "../services/car.service.js";
 import { sendResponse } from "../helpers/response.helper.js";
 
 // create car controller
-export const createCarController = async (_req, res, next) => {
+export const createCarController = async (c, next) => {
   try {
-    const createdCar = await createCarService(_req.body);
+    const createdCar = await createCarService(c.req.json());
 
     return sendResponse(
-      res,
+      c,
       201,
       true,
       "Car created successfully.",
       createdCar,
     );
-
   } catch (error) {
-    next(error);
+    return c.json({
+      success: false,
+      message: error.message,
+      data: null,
+    }, 500);
   }
 };
 
 // update controller
-export const updateCarController = async (_req, res, next) => {
+export const updateCarController = async (c, next) => {
   try {
+    const { id } = c.req.param();
     const updatedCar = await updateCarService(
-      _req.params.id,
-      _req.body
+      id,
+      c.req.json()
     );
 
     if (!updatedCar) {
       return sendResponse(
-        res,
+        c,
         404,
         false,
         "Car not found.",
@@ -50,25 +54,30 @@ export const updateCarController = async (_req, res, next) => {
     }
 
     return sendResponse(
-      res,
+      c,
       200,
       true,
       "Car updated successfully.",
       updatedCar,
     );
   } catch (error) {
-    next(error);
+    return c.json({
+      success: false,
+      message: error.message,
+      data: null,
+    }, 500);
   }
 };
 
 // delete car controller
-export const deleteCarController = async (_req, res, next) => {
+export const deleteCarController = async (c, next) => {
   try {
-    const deleteCarDetails = await deleteCarService(_req.params.id);
+    const { id } = c.req.param();
+    const deleteCarDetails = await deleteCarService(id);
 
     if (!deleteCarDetails) {
       return sendResponse(
-        res,
+        c,
         404,
         false,
         "Car not found.",
@@ -76,27 +85,31 @@ export const deleteCarController = async (_req, res, next) => {
     }
 
     return sendResponse(
-      res,
+      c,
       200,
       true,
       "Car deleted successfully.",
       deleteCarDetails
     );
   } catch (error) {
-    next(error);
+    return c.json({
+      success: false,
+      message: error.message,
+      data: null,
+    }, 500);
   }
 };
 
 // ================================ user car display api =========================================== //
 
 // all cars
-export const allCarsController = async (_req, res, next) => {
+export const allCarsController = async (c, next) => {
   try {
     const allCars = await getAllCarsService();
 
-    if (!allCars) {
+    if (!allCars || allCars.length === 0) {
       return sendResponse(
-        res,
+        c,
         404,
         false,
         "Car not found.",
@@ -104,25 +117,30 @@ export const allCarsController = async (_req, res, next) => {
     }
 
     return sendResponse(
-      res,
+      c,
       200,
       true,
       "Cars fetched successfully.",
       allCars
     );
   } catch (error) {
-    next(error);
+    return c.json({
+      success: false,
+      message: error.message,
+      data: null,
+    }, 500);
   }
 }
 
-// get car by id 
-export const carbyIdController = async (_req, res, next) => {
+// get car by id
+export const carbyIdController = async (c, next) => {
   try {
-    const carById = await getCarByIdService(_req.params.id);
+    const { id } = c.req.param();
+    const carById = await getCarByIdService(id);
 
-    if(!carById) {
+    if (!carById) {
       return sendResponse(
-        res,
+        c,
         404,
         false,
         "Car not found.",
@@ -130,24 +148,27 @@ export const carbyIdController = async (_req, res, next) => {
     }
 
     return sendResponse(
-      res,
+      c,
       200,
       true,
       "Car fetched successfully.",
       carById
     );
-  } catch(error) {
-    next(error);
+  } catch (error) {
+    return c.json({
+      success: false,
+      message: error.message,
+      data: null,
+    }, 500);
   }
 }
 
-export const searchCarsController = async (_req, res, next) => {
+export const searchCarsController = async (c, next) => {
   try {
-    console.log("search car called.", _req.query);
-    const result = await searchCarsServices(_req.query);
+    const result = await searchCarsServices(c.req.query());
     // return res.status(200).json("done");
     return sendResponse(
-      res,
+      c,
       200,
       true,
       "Cars fetched successfully",
@@ -155,18 +176,22 @@ export const searchCarsController = async (_req, res, next) => {
     );
 
   } catch (error) {
-    next(error);
+    return c.json({
+      success: false,
+      message: error.message,
+      data: null,
+    }, 500);
   }
 };
 
-export const brandSearchController = async (_req, res, next) => {
+export const brandSearchController = async (c, next) => {
   try {
-    const { brand } = _req.params;
+    const { brand } = c.req.param();
     const carBrand = await searchByBrandService(brand);
 
-    if(!carBrand) {
+    if (!carBrand) {
       return sendResponse(
-        res,
+        c,
         404,
         false,
         "Car Brand not found.",
@@ -174,26 +199,30 @@ export const brandSearchController = async (_req, res, next) => {
     }
 
     return sendResponse(
-      res,
+      c,
       200,
       true,
       "Car brand fetched successfully.",
       carBrand
     );
 
-  } catch(error) {
-    next(error);
+  } catch (error) {
+    return c.json({
+      success: false,
+      message: error.message,
+      data: null,
+    }, 500);
   }
 }
 
-export const categorySearchController = async (_req, res, next) => {
+export const categorySearchController = async (c, next) => {
   try {
-    const { category } = _req.params;
+    const { category } = c.req.param();
     const carCategory = await searchByCategoryService(category);
 
-    if(!carCategory || carCategory.length === 0) {
+    if (!carCategory || carCategory.length === 0) {
       return sendResponse(
-        res,
+        c,
         404,
         false,
         "Car Category not found.",
@@ -202,27 +231,31 @@ export const categorySearchController = async (_req, res, next) => {
     }
 
     return sendResponse(
-      res,
+      c,
       200,
       true,
       "Car category fetched successfully.",
       carCategory
     );
-  } catch(error) {
-    next(error);
+
+  } catch (error) {
+    return c.json({
+      success: false,
+      message: error.message,
+      data: null,
+    }, 500);
   }
 }
 
 // bodytype search
-export const bodyTypeSearchController = async (_req, res, next) => {
+export const bodyTypeSearchController = async (c, next) => {
   try {
-    const { bodyType } = _req.params;
-
+    const { bodyType } = c.req.param();
     const cars = await searchByBodyTypeService(bodyType);
 
     if (cars.length === 0) {
       return sendResponse(
-        res,
+        c,
         404,
         false,
         "Car BodyType not found.",
@@ -231,64 +264,84 @@ export const bodyTypeSearchController = async (_req, res, next) => {
     }
 
     return sendResponse(
-      res,
+      c,
       200,
       true,
       "Cars fetched successfully by body type",
       { count: cars.length, data: cars },
     );
+
   } catch (error) {
-    next(error);
+    return c.json({
+      success: false,
+      message: error.message,
+      data: null,
+    }, 500);
   }
 };
 
-// brand list 
-export const brandListController = async (_req, res, next) => {
+// brand list
+export const brandListController = async (c, next) => {
   try {
     const brands = await carBrandListService();
 
     return sendResponse(
-      res,
+      c,
       200,
       true,
       "Car brand list fetched successfully.",
       { count: brands.length, data: brands }
     );
-  } catch(error) {
-    next(error);
+
+  } catch (error) {
+    return c.json({
+      success: false,
+      message: error.message,
+      data: null,
+    }, 500);
   }
 }
 
 // category list
-export const categoryListController = async (_req, res, next) => {
+export const categoryListController = async (c, next) => {
   try {
     const categories = await carCategoryListService();
 
     return sendResponse(
-      res,
+      c,
       200,
       true,
       "Car category list fetched successfully.",
       { count: categories.length, data: categories }
     );
-  } catch(error) {
-    next(error);
+
+  } catch (error) {
+    return c.json({
+      success: false,
+      message: error.message,
+      data: null,
+    }, 500);
   }
 }
 
 // bodytype lis
-export const bodyTypeListController = async (_req, res, next) => {
+export const bodyTypeListController = async (c, next) => {
   try {
     const bodyType = await carBodytypeListService();
 
     return sendResponse(
-      res,
+      c,
       200,
       true,
       "Car bodyType list fetched successfully.",
       { count: bodyType.length, data: bodyType }
     );
-  } catch(error) {
-    next(error);
+
+  } catch (error) {
+    return c.json({
+      success: false,
+      message: error.message,
+      data: null,
+    }, 500);
   }
-}
+};

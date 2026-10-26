@@ -1,23 +1,27 @@
-import express from "express";
+import { Hono } from "hono";
 import carRoutes from "./routes/car.routes.js";
-import userRoutes from "./routes/user.routes.js"
+import userRoutes from "./routes/user.routes.js";
 import comparisonRoutes from "./routes/comparison.routes.js";
-import wishlistRoutes from "./routes/wishlist.routes.js"
+import wishlistRoutes from "./routes/wishlist.routes.js";
 import showroomRoutes from "./routes/showroom.routes.js";
 import serviceCenterRoutes from "./routes/serviceCenter.routes.js";
-import { errorHandler } from "./middleware/error.handler.middleware.js"
 
-const app = express();
+const app = new Hono();
 
-app.use(express.json());
+// Health check route
+app.get("/", (c) => {
+  return c.json({
+    success: true,
+    message: "DriveSphere backend is running",
+  });
+});
 
-app.use("/api/user", userRoutes); //user routes api
-app.use("/api/cars", carRoutes); //car routes api
-app.use("/api/comparison", comparisonRoutes); // comparison routes api
-app.use("/api/wishlist", wishlistRoutes); // wishlist routes api
-app.use("/api/showrooms", showroomRoutes); // showroom routes api
-app.use("/api/service-centers", serviceCenterRoutes); // service-center api
-// Register the error handler after routes.
-app.use(errorHandler);
+// API routes
+app.use("/api/user", userRoutes);
+app.use("/api/cars", carRoutes);
+app.use("/api/comparison", comparisonRoutes);
+app.use("/api/wishlist", wishlistRoutes);
+app.use("/api/showrooms", showroomRoutes);
+app.use("/api/service-centers", serviceCenterRoutes);
 
 export default app;

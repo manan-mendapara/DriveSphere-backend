@@ -1,40 +1,40 @@
+import { verify } from "hono/jwt";
 
-import jwt from "jsonwebtoken";
-
-export const authMiddleware = (req, res, next) => {
+export const authMiddleware = async (c, next) => {
   try {
-    const authHeader = req.headers.authorization;
+    const authHeader = c.req.header("authorization");
 
     if (!authHeader?.startsWith("Bearer ")) {
-      return res.status(401).json({
+      return c.json({
         success: false,
         message: "Authentication required.",
         data: null,
-      });
+      }, 401);
     }
 
     const token = authHeader.split(" ")[1];
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    // Verify JWT using Hono's verify function with env secret
+    const payload = await verify(token, c.env.JWT_SECRET);
 
-    req.user = {
-      id: decoded.id ?? decoded._id,
-    };
+    c.set("user", {
+      id: payload.id,
+    });
 
-    if (!req.user.id) {
-      return res.status(401).json({
+    if (!c.get("user")?.id) {
+      return c.json({
         success: false,
         message: "Invalid authentication token.",
         data: null,
-      });
+      }, 401);
     }
 
-    next();
+    await next();
   } catch (error) {
-    return res.status(401).json({
+    return c.json({
       success: false,
       message: "Invalid or expired token.",
       data: null,
-    });
+    }, 401);
   }
 };

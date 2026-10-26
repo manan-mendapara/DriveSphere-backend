@@ -1,49 +1,32 @@
+export const createServiceCenterService = async (serviceCenterData) => {
+  // TODO: Replace with D1 query to create service center
+  // const result = await db.insertInto("service_centers").values(serviceCenterData).returning("*").executeTakeFirst();
 
-import ServiceCenter from "../models/serviceCenter.model.js";
+  // For now, return mock service center - replace with actual D1 query
+  return {
+    id: "mock-service-center-id",
+    ...serviceCenterData,
+    createdAt: new Date(),
+  };
+};
 
-export const getNearbyServiceCentersService = async (
-  latitude,
-  longitude,
-  maxDistance = 10000
-) => {
-  // Validate latitude and longitude
-  if (
-    !Number.isFinite(latitude) ||
-    !Number.isFinite(longitude) ||
-    latitude < -90 ||
-    latitude > 90 ||
-    longitude < -180 ||
-    longitude > 180
-  ) {
-    const error = new Error("Invalid latitude or longitude.");
-    error.statusCode = 400;
-    throw error;
-  }
+export const getServiceCenterService = async (serviceCenterId) => {
+  // TODO: Replace with D1 query to get service center by ID
+  // const result = await db.selectFrom("service_centers").selectAll().where("id", "=", serviceCenterId).executeTakeFirst();
 
-  // Validate search distance
-  if (
-    !Number.isFinite(maxDistance) ||
-    maxDistance <= 0 ||
-    maxDistance > 100000
-  ) {
-    const error = new Error("Invalid search distance.");
-    error.statusCode = 400;
-    throw error;
-  }
+  // For now, return mock service center - replace with actual D1 query
+  return {
+    id: serviceCenterId,
+    ...serviceCenterData,
+    createdAt: new Date(),
+  };
+};
 
-  const serviceCenters = await ServiceCenter.find({
-    location: {
-      $near: {
-        $geometry: {
-          type: "Point",
-          coordinates: [longitude, latitude],
-        },
-        $maxDistance: maxDistance,
-      },
-    },
-  })
-    .limit(20)
-    .lean();
+// get all service centers
+export const getAllServiceCentersService = async () => {
+  // TODO: Replace with D1 query to get all service centers
+  // const results = await db.selectFrom("service_centers").selectAll().execute();
 
-  return serviceCenters;
+  // For now, return mock service centers - replace with actual D1 query
+  return [];
 };

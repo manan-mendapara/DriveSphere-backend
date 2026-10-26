@@ -1,139 +1,184 @@
-import Car from "../models/car.model.js";
-import {
-  buildCarFilter,
-  buildCarPagination,
-  buildCarSort,
-} from "../helpers/carSearch.helper.js";
 import { escapeRegex } from "../helpers/regex.helper.js";
 
 // =================================== admin side operations ================================== //
 
 // create cars
 export const createCarService = async (carData) => {
-  const car = await Car.create(carData);
+  // TODO: Replace with D1 query to insert car
+  // const { db } = c.env; // or receive db as parameter
+  // const result = await db.prepare(
+  //   "INSERT INTO cars (brand, model, variant, year, bodyType, category, price, specification, safety, images, isFeatured) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+  // ).bind(...values).run();
 
-  return car;
+  // For now, return mock car data - replace with actual D1 insert
+  return {
+    id: "mock-car-id",
+    ...carData,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
 };
 
 // update cars
 export const updateCarService = async (carId, updateData) => {
-  const updatedCar = await Car.findByIdAndUpdate(
-    carId,
-    { $set: updateData },
-    {
-      returnDocument: "after",
-      runValidators: true,
-      strict: "throw",
-    },
-  );
+  // TODO: Replace with D1 query to update car
+  // const result = await db
+  //   .update("cars")
+  //   .set(updateData)
+  //   .where("id", "=", carId)
+  //   .returning("*")
+  //   .execute();
 
-  return updatedCar;
+  // For now, return mock updated car - replace with actual D1 update
+  return {
+    id: carId,
+    ...updateData,
+    updatedAt: new Date(),
+  };
 };
 
 // delete cars
 export const deleteCarService = async (carId) => {
-  const deleteCar = await Car.findByIdAndDelete(carId);
-  return deleteCar;
+  // TODO: Replace with D1 query to delete car
+  // const result = await db
+  //   .delete("cars")
+  //   .where("id", "=", carId)
+  //   .execute();
+
+  // For now, return mock deleted car - replace with actual D1 delete
+  return {
+    id: carId,
+    deleted: true,
+  };
 };
 
 // ======================================== user side operation ==================================== //
 
 // get all cars
 export const getAllCarsService = async () => {
-  const allCars = await Car.find();
+  // TODO: Replace with D1 query to get all cars
+  // const cars = await db.selectFrom("cars").selectAll().execute();
 
-  return allCars;
+  // For now, return mock cars - replace with actual D1 query
+  return [
+    {
+      id: "mock-1",
+      brand: "Toyota",
+      model: "Camry",
+      year: 2020,
+      bodyType: "Sedan",
+      category: "Mid-Range",
+      price: 25000,
+      specification: {
+        fuelType: "Petrol",
+        transmission: "Automatic",
+        horsepower: 200,
+        torque: 180,
+        seatingCapacity: 5,
+      },
+      images: { thumbnail: "https://example.com/car1.jpg", gallery: [] },
+      isFeatured: false,
+    },
+  ];
 };
 
 // find by id service
 export const getCarByIdService = async (carId) => {
-  const carById = await Car.findById(carId);
+  // TODO: Replace with D1 query to get car by ID
+  // const car = await db.selectFrom("cars").selectAll().where("id", "=", carId).executeTakeFirst();
 
-  return carById;
+  // For now, return mock car - replace with actual D1 query
+  return {
+    id: carId,
+    brand: "Toyota",
+    model: "Camry",
+    year: 2020,
+    bodyType: "Sedan",
+    category: "Mid-Range",
+    price: 25000,
+    specification: {
+      fuelType: "Petrol",
+      transmission: "Automatic",
+      horsepower: 200,
+      torque: 180,
+      seatingCapacity: 5,
+    },
+    images: { thumbnail: "https://example.com/car1.jpg", gallery: [] },
+    isFeatured: false,
+  };
 };
 
 // car brand list
-export const carBrandListService = async (brand) => {
-  const brandList = await Car.distinct("brand");
+export const carBrandListService = async () => {
+  // TODO: Replace with D1 query to get distinct brands
+  // const brands = await db.selectFrom("cars").select("brand").distinct().execute();
 
-  return brandList.filter(Boolean).sort((a, b) => {
-    a.localeCompare(b);
-  });
+  // For now, return mock brands - replace with actual D1 query
+  return ["Toyota", "Honda", "Ford", "BMW", " Mercedes-Benz"];
 };
 
 // car category list
-export const carCategoryListService = async (category) => {
-  const categoryList = await Car.distinct("category");
+export const carCategoryListService = async () => {
+  // TODO: Replace with D1 query to get distinct categories
+  // const categories = await db.selectFrom("cars").select("category").distinct().execute();
 
-  return categoryList.filter(Boolean).sort((a, b) => {
-    a.localeCompare(b);
-  });
+  // For now, return mock categories - replace with actual D1 query
+  return ["Sedan", "SUV", "Hatchback", "Coupe", "Convertible"];
 };
 
 // car boytype list
-export const carBodytypeListService = async (bodytype) => {
-  const bodyTypeList = await Car.distinct("bodyType");
+export const carBodytypeListService = async () => {
+  // TODO: Replace with D1 query to get distinct body types
+  // const bodyTypes = await db.selectFrom("cars").select("bodyType").distinct().execute();
 
-  return bodyTypeList.filter(Boolean).sort((a, b) => {
-    a.localeCompare(b);
-  });
+  // For now, return mock body types - replace with actual D1 query
+  return ["Sedan", "SUV", "Hatchback"];
 };
 
-// car search quey
+// car search query
 export const searchCarsServices = async (query) => {
-  const filter = buildCarFilter(query);
-  const { page, limit, skip } = buildCarPagination(query);
-  const sort = buildCarSort(query);
+  // TODO: Replace with D1 query with filtering, pagination, and sorting
+  // const filter = buildCarFilter(query);
+  // const { page, limit, skip } = buildCarPagination(query);
+  // const sort = buildCarSort(query);
+  // const cars = await db.selectFrom("cars").selectAll().where(filter).orderBy(sort).skip(skip).limit(limit).execute();
+  // const total = await db.selectFrom("cars").selectAll().where(filter).executeTakeFirstOrThrow().count;
 
-  const [cars, total] = await Promise.all([
-    Car.find(filter).sort(sort).skip(skip).limit(limit).lean(),
-
-    Car.countDocuments(filter),
-  ]);
-
+  // For now, return mock data - replace with actual D1 query
   return {
-    cars,
+    cars: [],
     pagination: {
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit),
+      total: 0,
+      page: query.page ?? 1,
+      limit: query.limit ?? 10,
+      totalPages: 0,
     },
   };
 };
 
 // car search by brand
 export const searchByBrandService = async (brand) => {
-  const carByBrand = await Car.find({
-    brand: {
-      $regex: `^${escapeRegex(brand.trim())}$`,
-      $options: "i",
-    },
-  }).lean();
+  // TODO: Replace with D1 query with brand filter
+  // const cars = await db.selectFrom("cars").selectAll().where("brand", "=", brand).execute();
 
-  return carByBrand;
+  // For now, return mock data - replace with actual D1 query
+  return [];
 };
 
 // search category type
 export const searchByCategoryService = async (category) => {
-  const escapedCategory = escapeRegex(category.trim());
+  // TODO: Replace with D1 query with category filter
+  // const cars = await db.selectFrom("cars").selectAll().where("category", "=", category).execute();
 
-  return await Car.find({
-    category: {
-      $regex: `^${escapedCategory}$`,
-      $options: "i",
-    },
-  });
+  // For now, return mock data - replace with actual D1 query
+  return [];
 };
 
 // search bodytype
 export const searchByBodyTypeService = async (bodyType) => {
-  const escapedBodyType = escapeRegex(bodyType.trim());
+  // TODO: Replace with D1 query with bodyType filter
+  // const cars = await db.selectFrom("cars").selectAll().where("bodyType", "=", bodyType).execute();
 
-  return await Car.find({
-    bodyType: {
-      $regex: `^${escapedBodyType}$`,
-      $options: "i",
-    },
-  });
+  // For now, return mock data - replace with actual D1 query
+  return [];
 };

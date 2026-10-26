@@ -1,13 +1,30 @@
-import { httpServerHandler } from "cloudflare:node";
-import app from "./app.js";
+import { Hono } from "hono";
+import { serve } from "@hono/node-server";
+import carRoutes from "./routes/car.routes.js";
+import userRoutes from "./routes/user.routes.js";
+import comparisonRoutes from "./routes/comparison.routes.js";
+import wishlistRoutes from "./routes/wishlist.routes.js";
+import showroomRoutes from "./routes/showroom.routes.js";
+import serviceCenterRoutes from "./routes/serviceCenter.routes.js";
 
-app.get("/", (req, res) => {
-  res.status(200).json({
+const app = new Hono();
+
+// Health check route
+app.get("/", (c) => {
+  return c.json({
     success: true,
     message: "DriveSphere backend is running",
   });
 });
 
-app.listen(3000);
+// API routes
+app.use("/api/user", userRoutes);
+app.use("/api/cars", carRoutes);
+app.use("/api/comparison", comparisonRoutes);
+app.use("/api/wishlist", wishlistRoutes);
+app.use("/api/showrooms", showroomRoutes);
+app.use("/api/service-centers", serviceCenterRoutes);
 
-export default httpServerHandler({ port: 3000 });
+export default {
+  fetch: serve(app),
+};

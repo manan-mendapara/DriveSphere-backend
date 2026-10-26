@@ -1,43 +1,72 @@
+import { createShowroomService, getShowroomService, getAllShowroomsService } from "../services/showroom.service.js";
+import { sendResponse } from "../helpers/response.helper.js";
 
-import { getNearbyShowroomsService } from "../services/showroom.service.js";
-
-export const getNearbyShowroomsController = async (req, res, next) => {
+export const createShowroomController = async (c, next) => {
   try {
-    const latitude = Number(req.query.lat);
-    const longitude = Number(req.query.lng);
+    const showroom = await createShowroomService(c.req.json());
 
-    const maxDistance =
-      req.query.maxDistance === undefined
-        ? 10000
-        : Number(req.query.maxDistance);
+    return sendResponse(
+      c,
+      201,
+      true,
+      "Showroom created successfully.",
+      showroom
+    );
+  } catch (error) {
+    return c.json({
+      success: false,
+      message: error.message,
+      data: null,
+    }, 500);
+  }
+};
 
-    // Check required query parameters
-    if (
-      req.query.lat === undefined ||
-      req.query.lng === undefined ||
-      req.query.lat.trim() === "" ||
-      req.query.lng.trim() === ""
-    ) {
-      return res.status(400).json({
-        success: false,
-        message: "Latitude and longitude are required.",
-        data: [],
-      });
+export const getShowroomController = async (c, next) => {
+  try {
+    const { id } = c.req.param();
+    const showroom = await getShowroomService(id);
+
+    if (!showroom) {
+      return sendResponse(
+        c,
+        404,
+        false,
+        "Showroom not found.",
+      );
     }
 
-    const showrooms = await getNearbyShowroomsService(
-      latitude,
-      longitude,
-      maxDistance
+    return sendResponse(
+      c,
+      200,
+      true,
+      "Showroom fetched successfully.",
+      showroom
     );
-
-    return res.status(200).json({
-      success: true,
-      message: "Nearby showrooms fetched successfully.",
-      count: showrooms.length,
-      data: showrooms,
-    });
   } catch (error) {
-    next(error);
+    return c.json({
+      success: false,
+      message: error.message,
+      data: null,
+    }, 500);
+  }
+};
+
+export const getAllShowroomsController = async (c, next) => {
+  try {
+    const showrooms = await getAllShowroomsService();
+
+    return sendResponse(
+      c,
+      200,
+      true,
+      "Showrooms fetched successfully.",
+      showrooms
+    );
+  } catch (error) {
+    return c.json({
+      success: false,
+      message: error.message,
+      data: null,
+    }, 500);
   }
 };

@@ -1,43 +1,44 @@
 import { createUserService, loginUserService } from "../services/user.service.js";
 import { sendResponse } from "../helpers/response.helper.js";
-import bcrypt from "bcryptjs";
 
-export const createUserController = async (req, res, next) => {
+export const createUserController = async (c, next) => {
   try {
+    const { username, email, password } = c.req.json();
+    const createdUser = await createUserService({ username, email, password });
 
-    const { username, email, password } = req.body;
-    const hashedpassword = await bcrypt.hash(password, 10);
-    const createdUser = await createUserService({
-      username,
-      email, 
-      password: hashedpassword
-    });
-        
     return sendResponse(
-      res,
+      c,
       201,
       true,
       "User created successfully.",
       createdUser
     );
-  } catch(error) {
-      next(error);
+  } catch (error) {
+    return c.json({
+      success: false,
+      message: error.message,
+      data: null,
+    }, 400);
   }
-}
+};
 
-export const loginUserController = async (req, res, next) => {
+export const loginUserController = async (c, next) => {
   try {
-    const { email, password } = req.body;
+    const { email, password } = c.req.json();
     const result = await loginUserService(email, password);
 
     return sendResponse(
-      res,
+      c,
       200,
       true,
       "Login successful.",
       result
     );
   } catch (error) {
-    next(error);
+    return c.json({
+      success: false,
+      message: error.message,
+      data: null,
+    }, 401);
   }
 };

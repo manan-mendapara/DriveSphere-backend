@@ -1,37 +1,36 @@
-
-import express from "express";
-import { 
-    validateCarDelete, 
-    validateCarId, 
-    validateCarRequest, 
-    validateCarUpdate, 
-    validateCarSearch, 
-    validateBrand,  
+import { Hono } from "hono";
+import {
+  validateCarRequest,
+  validateCarUpdate,
+  validateCarDelete,
+  validateCarId,
+  validateCarSearch,
+  validateBrand
 } from "../middleware/car.middleware.js";
-import { 
-    allCarsController, 
-    bodyTypeListController, 
-    bodyTypeSearchController, 
-    brandListController, 
-    brandSearchController, 
-    carbyIdController, 
-    categoryListController, 
-    categorySearchController, 
-    createCarController, 
-    deleteCarController, 
-    searchCarsController, 
-    updateCarController,
+import {
+  allCarsController,
+  bodyTypeListController,
+  bodyTypeSearchController,
+  brandListController,
+  brandSearchController as brandSearchCntl,
+  carbyIdController,
+  categoryListController,
+  categorySearchController as categorySearchCntl,
+  bodyTypeSearchController as bodyTypeSearchCntl,
+  createCarController,
+  deleteCarController,
+  searchCarsController,
+  updateCarController
 } from "../controllers/car.controller.js";
 import { authMiddleware } from "../middleware/auth.middleware.js";
 import { adminMiddleware } from "../middleware/admin.middleware.js";
 
-
-const router = express.Router();
+const carRouter = new Hono();
 
 // ======================================== admin car creation routes =================================//
-// ========================= Admin car management routes ========================= //
 
-router.post(
+// Admin routes - require auth and admin
+carRouter.post(
   "/",
   authMiddleware,
   adminMiddleware,
@@ -39,7 +38,7 @@ router.post(
   createCarController
 );
 
-router.patch(
+carRouter.patch(
   "/:id",
   authMiddleware,
   adminMiddleware,
@@ -47,7 +46,7 @@ router.patch(
   updateCarController
 );
 
-router.delete(
+carRouter.delete(
   "/:id",
   authMiddleware,
   adminMiddleware,
@@ -55,17 +54,15 @@ router.delete(
   deleteCarController
 );
 
-// =============================== user routes ======================================= //
-router.get("/", allCarsController);
-router.get("/search/:id", validateCarId, carbyIdController);
-router.get("/search", validateCarSearch, searchCarsController );
-router.get("/brand/:brand", validateBrand, brandSearchController);
-router.get("/brands", brandListController);
-router.get("/category", categoryListController);
-router.get("/category/:category", categorySearchController);
-router.get("/bodytype", bodyTypeListController);
-router.get("/bodytype/:bodyType", bodyTypeSearchController);
+// User routes - public
+carRouter.get("/", allCarsController);
+carRouter.get("/search/:id", validateCarId, carbyIdController);
+carRouter.get("/search", validateCarSearch, searchCarsController);
+carRouter.get("/brand/:brand", validateBrand, brandSearchCntl);
+carRouter.get("/brands", brandListController);
+carRouter.get("/category", categoryListController);
+carRouter.get("/category/:category", categorySearchCntl);
+carRouter.get("/bodytype", bodyTypeListController);
+carRouter.get("/bodytype/:bodyType", bodyTypeSearchCntl);
 
-
-
-export default router;
+export default carRouter;

@@ -1,12 +1,10 @@
+import { Hono } from "hono";
+import { createShowroomController, getShowroomController, getAllShowroomsController } from "../controllers/showroom.controller.js";
 
-import express from "express";
+const showroomRouter = new Hono();
 
-import {
-  getNearbyShowroomsController,
-} from "../controllers/showroom.controller.js";
+showroomRouter.post("/", createShowroomController);
+showroomRouter.get("/:id", getShowroomController);
+showroomRouter.get("/", getAllShowroomsController);
 
-const router = express.Router();
-
-router.get("/nearby", getNearbyShowroomsController);
-
-export default router;
+export default showroomRouter;

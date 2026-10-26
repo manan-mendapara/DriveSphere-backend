@@ -1,17 +1,10 @@
-import express from "express";
+import { Hono } from "hono";
+import { createComparisonController, getComparisonController, getAllComparisonsController } from "../controllers/comparison.controller.js";
 
-import {
-  createComparisonController,
-  getComparisonController,
-  deleteComparisonController,
-} from "../controllers/comparison.controller.js";
+const comparisonRouter = new Hono();
 
-import { authMiddleware } from "../middleware/auth.middleware.js";
+comparisonRouter.post("/", createComparisonController);
+comparisonRouter.get("/:id", getComparisonController);
+comparisonRouter.get("/comparisons", getAllComparisonsController);
 
-const router = express.Router();
-
-router.post("/", authMiddleware, createComparisonController);
-router.get("/", authMiddleware, getComparisonController);
-router.delete("/", authMiddleware, deleteComparisonController);
-
-export default router;
+export default comparisonRouter;

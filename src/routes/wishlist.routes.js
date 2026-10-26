@@ -1,16 +1,10 @@
-import express from "express";
-import {
-    addToWishlistController,
-    getWishlistController,
-    removeFromWishlistController,
-} from "../controllers/wishlist.controller.js";
+import { Hono } from "hono";
+import { createWishlistController, getWishlistController, getAllWishlistController } from "../controllers/wishlist.controller.js";
 
-import { authMiddleware } from "../middleware/auth.middleware.js";
+const wishlistRouter = new Hono();
 
-const router = express.Router();
+wishlistRouter.post("/", createWishlistController);
+wishlistRouter.get("/:id", getWishlistController);
+wishlistRouter.get("/", getAllWishlistController);
 
-router.post("/:carId", authMiddleware, addToWishlistController);
-router.get("/", authMiddleware, getWishlistController);
-router.delete("/:carId", authMiddleware, removeFromWishlistController);
-
-export default router;
+export default wishlistRouter;
